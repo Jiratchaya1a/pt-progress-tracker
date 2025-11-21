@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PT Progress Tracker — Scan Session</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 12px; background:#f7f7f7; }
+    .container { max-width:600px; margin:0 auto; background:white; padding:16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+    h2 { text-align:center; }
+    label { display:block; margin-top:10px; font-weight:600; }
+    input[type="number"], input[type="text"], textarea, select { width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #ddd; box-sizing:border-box; }
+    .row { display:flex; gap:8px; }
+    .row > div { flex:1; }
+    .btn { display:block; width:100%; padding:12px; margin-top:14px; background:#007bff; color:white; border:none; border-radius:6px; font-size:16px; }
+    .small { font-size:13px; color:#555; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>PT Progress Tracker</h2>
+    <p class="small">กรุณากรอกข้อมูลก่อน/หลังการรักษา (แบบเดียวกัน) — กด Save เมื่อเสร็จ</p>
+
+    <!-- hidden fields filled from URL params -->
+    <input type="hidden" id="session_id" />
+    <input type="hidden" id="hn" />
+
+    <label>วันที่และเวลา</label>
+    <input type="text" id="datetime" readonly />
+
+    <label>VAS (ปวด) 0-10</label>
+    <input type="number" id="vas" min="0" max="10" />
+
+    <label>TUG (วินาที) — ถ้าไม่สามารถวัดให้เว้นว่าง</label>
+    <input type="number" step="0.1" id="tug" />
+
+    <label>Walking distance (m)</label>
+    <input type="number" step="1" id="walk_dist" />
+
+    <label>ROM (เช่น Shoulder abduction, deg)</label>
+    <input type="text" id="rom" placeholder="เช่น Shoulder abduction: 90" />
+
+    <label>ทำ Home exercise หรือไม่</label>
+    <select id="home_ex">
+      <option value="">-- เลือก --</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+      <option value="partial">Partial</option>
+    </select>
+
+    <label>หมายเหตุ / อาการไม่พึงประสงค์</label>
+    <textarea id="comments" rows="3"></textarea>
+
+    <button class="btn" id="btnSave">Save</button>
+
+    <p class="small" id="msg"></p>
+  </div>
+
+  <script>
+    // อ่าน session, hn จาก URL เช่น ?session=abcd123&hn=HN001
+    function readParams() {
+      const params = new URLSearchParams(window.location.search);
+      document.getElementById('session_id').value = params.get('session') || '';
+      document.getElementById('hn').value = params.get('hn') || '';
+      document.getElementById('datetime').value = new Date().toLocaleString('th-TH');
+    }
+    readParams();
+
+    document.getElementById('btnSave').addEventListener('click', async () => {
+      const payload = {
+        session_id: document.getElementById('session_id').value,
+        hn: document.getElementById('hn').value,
+        datetime: new Date().toISOString(),
+        vas: document.getElementById('vas').value || null,
+        tug: document.getElementById('tug').value || null,
+        walk_dist: document.getElementById('walk_dist').value || null,
+        rom: document.getElementById('rom').value || null,
+        home_ex: document.getElementById('home_ex').value || null,
+        comments: document.getElementById('comments').value || null,
+        device: navigator.userAgent
+      };
+
+      // validation: require session or hn
+      if (!payload.session_id && !payload.hn) {
+        document.getElementById('msg').textContent = 'Error: ไม่มี session หรือ HN โปรดติดต่อเจ้าหน้าที่';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/session_entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('msg').textContent = 'บันทึกสำเร็จ';
+          // clear some fields or lock input to avoid double submit
+        } else {
+          document.getElementById('msg').textContent = 'Error: ' + (data.message || 'ไม่สามารถบันทึกได้');
+        }
+      } catch (err) {
+        document.getElementById('msg').textContent = 'Network error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
