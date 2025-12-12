@@ -288,53 +288,51 @@ flatpickr("#dob", {
   locale: "th",
   altInput: true,
   altFormat: "d F Y",
-  dateFormat: "Y-m-d", // เก็บหลังบ้านเป็น ค.ศ.
-  
-  onReady: function(selectedDates, dateStr, instance) {
-    convertCalendarToThai(instance);
+  dateFormat: "Y-m-d",
+
+  onReady(selectedDates, dateStr, instance) {
+    fixThaiYear(instance);
     if (selectedDates.length > 0) updateThaiDisplay(instance, selectedDates[0]);
   },
 
-  onOpen: function(selectedDates, dateStr, instance) {
-    convertCalendarToThai(instance);
+  onOpen(selectedDates, dateStr, instance) {
+    fixThaiYear(instance);
   },
 
-  onMonthChange: function(selectedDates, dateStr, instance) {
-    convertCalendarToThai(instance);
+  onMonthChange(selectedDates, dateStr, instance) {
+    fixThaiYear(instance);
   },
 
-  onYearChange: function(selectedDates, dateStr, instance) {
-    convertCalendarToThai(instance);
+  onYearChange(selectedDates, dateStr, instance) {
+    fixThaiYear(instance);
   },
 
-  onChange: function(selectedDates, dateStr, instance) {
+  onChange(selectedDates, dateStr, instance) {
     if (selectedDates.length > 0) updateThaiDisplay(instance, selectedDates[0]);
   }
 });
 
-function convertCalendarToThai(instance) {
-  // แสดงปีไทยใน UI
-  const yearElements = instance.calendarContainer.querySelectorAll(".cur-year");
-  yearElements.forEach(el => {
-    const yearCE = parseInt(el.value);     // ปี ค.ศ.
-    el.value = yearCE + 543;               // แปลงเป็น พ.ศ.
-  });
+// ป้องกันปีถูกบวกซ้ำ
+function fixThaiYear(instance) {
+  const yearInput = instance.calendarContainer.querySelector(".cur-year");
 
-  const yearLabels = instance.calendarContainer.querySelectorAll(".flatpickr-current-year");
-  yearLabels.forEach(el => {
-    const input = el.querySelector("input.cur-year");
-    if (input) {
-      const yearCE = parseInt(input.value) - 543;
-      input.dataset.year = yearCE;
-    }
-  });
+  if (!yearInput) return;
+
+  let y = parseInt(yearInput.value);
+
+  // ถ้าเป็นปี ค.ศ. (< 2500) → แปลงเป็น พ.ศ.
+  if (y < 2500) {
+    yearInput.value = y + 543;
+  }
+
+  // ถ้าเป็น พ.ศ. แล้ว → ไม่ต้องบวกซ้ำ
 }
 
-// อัปเดตข้อความในช่อง input ให้เป็น พ.ศ.
 function updateThaiDisplay(instance, date) {
   const thaiYear = date.getFullYear() + 543;
-  instance.altInput.value =
-    `${date.getDate()} ${instance.l10n.months.longhand[date.getMonth()]} ${thaiYear}`;
+  const d = date.getDate();
+  const m = instance.l10n.months.longhand[date.getMonth()];
+  instance.altInput.value = `${d} ${m} ${thaiYear}`;
 }
 
 
