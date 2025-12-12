@@ -411,22 +411,50 @@ function validateForm(p){
   return true;
 }
 
+const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyPNL_fe4Wl9La5HglCibH7rqs0KH9LQIQUJq92a9vpQZ_vms6kVTxQl-SDASgeLTmp/exec";
+
 document.getElementById('saveBtn').addEventListener('click', () => {
   const p = collectForm();
-  if(!validateForm(p)) return;
-  if(editingId){
-    // update
+  if (!validateForm(p)) return;
+
+  // สร้าง timestamp
+  p.created_at = new Date().toISOString();
+
+  /* -----------------------------
+      1) บันทึกลง LocalStorage
+  ------------------------------*/
+  if (editingId) {
     patients = patients.map(x => x.id === editingId ? p : x);
     editingId = null;
     document.getElementById('saveBtn').innerText = '➕ เพิ่มผู้ป่วย';
     document.getElementById('cancelEditBtn').style.display = 'none';
-  }else{
-    // add
+  } else {
     patients.push(p);
   }
+
   saveToLocal();
   renderTable();
   clearForm();
+
+
+  /* -----------------------------
+      2) ส่งข้อมูลไป Google Sheet
+  ------------------------------*/
+  fetch(GOOGLE_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(p)
+  })
+  .then(res => res.json())
+  .then(result => {
+    console.log("✔ ส่งข้อมูลไป Google Sheets สำเร็จ:", result);
+  })
+  .catch(err => {
+    console.error("❌ ส่งข้อมูลล้มเหลว:", err);
+    alert("⚠ ไม่สามารถส่งข้อมูลไป Google Sheet ได้");
+  });
 });
 
 function startEdit(id){
