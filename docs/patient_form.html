@@ -287,23 +287,39 @@
 flatpickr("#dob", {
   locale: "th",
   altInput: true,
-  altFormat: "d F Y",
-  dateFormat: "Y-m-d",
+  altFormat: "d F Y",   // รูปแบบโชว์ (เราจะ +543 ปีให้)
+  dateFormat: "Y-m-d",  // ค่าที่ส่งออกจริง (เป็น ค.ศ.)
+  
   onReady: function(selectedDates, dateStr, instance) {
+    // ทำให้ปฏิทินเป็นปี พ.ศ.
+    instance.currentYear += 543;
+    instance.redraw();
+    
     if (selectedDates.length > 0) {
       const d = selectedDates[0];
+      const thaiYear = d.getFullYear() + 543;
       instance.altInput.value =
-        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
+        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${thaiYear}`;
     }
   },
+
+  onOpen: function(selectedDates, dateStr, instance) {
+    instance.currentYear += 543;
+    instance.redraw();
+  },
+
   onChange: function(selectedDates, dateStr, instance) {
     if (selectedDates.length > 0) {
       const d = selectedDates[0];
+      const thaiYear = d.getFullYear() + 543;
+
+      // แสดง พ.ศ.
       instance.altInput.value =
-        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
+        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${thaiYear}`;
     }
   }
 });
+
 
 /* ------------ วันที่ไทย (พ.ศ.) ------------ */
 function formatThaiDate(date = new Date()) {
