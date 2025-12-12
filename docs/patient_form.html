@@ -105,10 +105,11 @@
     </div>
   </div>
 
-
   <div class="card" style="margin-bottom:14px;">
     <form id="patientForm" onsubmit="return false;">
-      <div class="form-grid">
+  
+      <!-- แถวแรก 3 ช่อง -->
+      <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
         <div>
           <label>HN</label><input id="hn" type="text" placeholder="รหัส HN">
         </div>
@@ -118,7 +119,10 @@
         <div>
           <label>AN</label><input id="an" type="text" placeholder="AN (ถ้ามี)">
         </div>
-
+      </div>
+  
+      <!-- แถวปกติ (auto-fit) -->
+      <div class="form-grid" style="margin-top:12px;">
         <div>
           <label>ชื่อ-นามสกุล</label><input id="fullname" type="text" placeholder="ชื่อ นามสกุล">
         </div>
@@ -129,7 +133,7 @@
         <div>
           <label>วันเกิด</label><input id="dob" type="text" placeholder="เลือกวันเกิด">
         </div>
-
+  
         <div style="grid-column: span 2;">
           <label>สิทธิการรักษา</label>
           <select id="insurance">
@@ -157,7 +161,7 @@
             <option>ชำระเงินเอง</option>
           </select>
         </div>
-
+  
         <div>
           <label>บ้านเลขที่</label><input id="house_no" type="text">
         </div>
@@ -176,7 +180,7 @@
         <div>
           <label>รหัสไปรษณีย์</label><input id="zipcode" readonly>
         </div>
-
+  
         <div>
           <label>เบอร์โทร</label><input id="phone" type="text">
         </div>
@@ -190,7 +194,7 @@
             <option>กภ.จริยา ฐินะกุล</option>
           </select>
         </div>
-
+  
         <div>
           <label>แพ้ยา</label><input id="drug_allergy" type="text">
         </div>
@@ -201,12 +205,13 @@
           <label>การวินิจฉัย</label><input id="diagnosis" type="text">
         </div>
       </div>
-
+  
       <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
         <button id="saveBtn" type="button" class="btn">➕ เพิ่มผู้ป่วย</button>
         <button id="cancelEditBtn" type="button" class="btn btn-ghost" style="display:none">ยกเลิกการแก้ไข</button>
         <div style="margin-left:auto" class="small muted-td">ผู้ป่วยทั้งหมด: <span id="totalCount">0</span></div>
       </div>
+  
     </form>
   </div>
 
