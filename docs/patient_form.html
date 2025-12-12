@@ -87,6 +87,48 @@
   @media (max-width:720px){
     .top-row{flex-direction:column;align-items:stretch}
   }
+
+  .datepicker-popup {
+    position: absolute;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    width: 260px;
+    z-index: 9999;
+  }
+  
+  .datepicker-popup select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 10px;
+  }
+  
+  .datepicker-popup .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  
+  .datepicker-popup .day {
+    padding: 6px 0;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  
+  .datepicker-popup .day:hover {
+    background: #e3f2fd;
+  }
+  
+  .datepicker-popup .day.disabled {
+    color: #ccc;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
@@ -136,8 +178,10 @@
       
         <!-- วันเกิด -->
         <div>
-          <label>วันเกิด</label><input id="dob" type="text" placeholder="เลือกวันเกิด">
+          <label>วันเกิด</label>
+          <input id="dob" type="text" placeholder="เลือกวันเกิด" readonly>
         </div>
+        <div id="dobPicker" class="datepicker-popup" style="display:none"></div>
       
         <!-- สิทธิการรักษา -->
         <div style="grid-column: span 2;">
@@ -283,6 +327,116 @@
 </div>
 
 <script>
+  const dobInput = document.getElementById("dob");
+  const picker = document.getElementById("dobPicker");
+  
+  // สร้าง dropdown ปีไทย (พ.ศ.)
+  function generateYearOptions() {
+    let html = `<select id="yearSelect">`;
+    const thisYearBE = new Date().getFullYear() + 543;
+  
+    for (let y = thisYearBE; y >= 2400; y--) {
+      html += `<option value="${y}">${y}</option>`;
+    }
+    html += `</select>`;
+    return html;
+  }
+  
+  // สร้าง dropdown เดือนไทย
+  function generateMonthOptions() {
+    const months = [
+      "มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
+      "กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"
+    ];
+  
+    let html = `<select id="monthSelect">`;
+    months.forEach((m, i) => {
+      html += `<option value="${i}">${m}</option>`;
+    });
+    html += `</select>`;
+    return html;
+  }
+  
+  // สร้างตารางวัน
+  function generateDays(yearBE, month) {
+    const yearCE = yearBE - 543;
+    const firstDay = new Date(yearCE, month, 1).getDay();
+    const daysInMonth = new Date(yearCE, month + 1, 0).getDate();
+  
+    let html = `<div class="day-grid">`;
+  
+    // ช่องว่างก่อนวันจริง
+    for (let i = 0; i < firstDay; i++) {
+      html += `<div></div>`;
+    }
+  
+    // วาดวันจริง
+    for (let d = 1; d <= daysInMonth; d++) {
+      html += `<div class="day" data-day="${d}">${d}</div>`;
+    }
+  
+    html += `</div>`;
+    return html;
+  }
+  
+  // เปิด Datepicker
+  dobInput.addEventListener("click", () => {
+    picker.style.display = "block";
+    picker.style.position = "absolute";
+    picker.style.top = `${dobInput.offsetTop + dobInput.offsetHeight + 6}px`;
+    picker.style.left = `${dobInput.offsetLeft}px`;
+  
+    picker.innerHTML =
+      generateYearOptions() +
+      generateMonthOptions() +
+      `<div id="dayContainer"></div>`;
+  
+    updateCalendar();
+  });
+  
+  // อัปเดตตารางวันเมื่อเลือกปี/เดือน
+  function updateCalendar() {
+    const yearBE = parseInt(document.getElementById("yearSelect").value);
+    const month = parseInt(document.getElementById("monthSelect").value);
+  
+    document.getElementById("dayContainer").innerHTML =
+      generateDays(yearBE, month);
+  
+    document.querySelectorAll(".day").forEach(dayEl => {
+      dayEl.addEventListener("click", () => {
+        const d = dayEl.dataset.day;
+        const yearCE = yearBE - 543;
+  
+        const finalDate = `${yearCE}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  
+        dobInput.value = finalDate;    // ค่าเก็บหลังบ้าน (ค.ศ.)
+        dobInput.dataset.thai = `${d} ${monthThai(month)} ${yearBE}`; // ใช้โชว์ก็ได้
+  
+        picker.style.display = "none";
+      });
+    });
+  }
+  
+  // เดือนไทย
+  function monthThai(m) {
+    const arr = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    return arr[m];
+  }
+  
+  // เมื่อเลือกปีหรือเดือน → อัปเดตปฏิทิน
+  document.addEventListener("change", (e) => {
+    if (e.target.id === "yearSelect" || e.target.id === "monthSelect") {
+      updateCalendar();
+    }
+  });
+  
+  // ปิดเมื่อคลิกข้างนอก
+  document.addEventListener("click", (e) => {
+    if (!picker.contains(e.target) && e.target !== dobInput) {
+      picker.style.display = "none";
+    }
+  });
+
 /* ------------ flatpickr config (Thai + พ.ศ.) ------------ */
 flatpickr("#dob", {
   locale: "th",
