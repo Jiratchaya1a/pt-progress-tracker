@@ -107,33 +107,26 @@
 
   <div class="card" style="margin-bottom:14px;">
     <form id="patientForm" onsubmit="return false;">
-  
-      <!-- แถวแรก 3 ช่อง -->
-      <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
-        <div>
-          <label>HN</label><input id="hn" type="text" placeholder="รหัส HN">
-        </div>
-        <div>
-          <label>CID</label><input id="cid" type="text" placeholder="เลขบัตรประชาชน (ถ้ามี)">
-        </div>
-        <div>
-          <label>AN</label><input id="an" type="text" placeholder="AN (ถ้ามี)">
-        </div>
-      </div>
-  
-      <!-- แถวปกติ (auto-fit) -->
+        
       <div class="form-grid" style="margin-top:12px;">
+      
+        <!-- ชื่อ นามสกุล -->
         <div>
           <label>ชื่อ-นามสกุล</label><input id="fullname" type="text" placeholder="ชื่อ นามสกุล">
         </div>
+      
+        <!-- เพศ -->
         <div>
           <label>เพศ</label>
           <select id="gender"><option>ชาย</option><option>หญิง</option></select>
         </div>
+      
+        <!-- วันเกิด -->
         <div>
           <label>วันเกิด</label><input id="dob" type="text" placeholder="เลือกวันเกิด">
         </div>
-  
+      
+        <!-- สิทธิการรักษา -->
         <div style="grid-column: span 2;">
           <label>สิทธิการรักษา</label>
           <select id="insurance">
@@ -161,29 +154,43 @@
             <option>ชำระเงินเอง</option>
           </select>
         </div>
-  
+      
+        <!-- ⬇⬇ ตำแหน่งใหม่หลังปรับเรียง (เบอร์โทรก่อนบ้านเลขที่) ⬇⬇ -->
+      
+        <!-- เบอร์โทร (เลื่อนขึ้นมาแทนบ้านเลขที่) -->
         <div>
-          <label>บ้านเลขที่</label><input id="house_no" type="text">
+          <label>เบอร์โทร</label>
+          <input id="phone" type="text" placeholder="เช่น 0812345678">
         </div>
+      
+        <!-- บ้านเลขที่ (เลื่อนลงมาแทนตำแหน่งของเบอร์โทรเดิม) -->
+        <div>
+          <label>บ้านเลขที่</label>
+          <input id="house_no" type="text">
+        </div>
+      
         <div>
           <label>หมู่</label><input id="moo" type="text">
         </div>
+      
         <div>
           <label>จังหวัด</label><select id="province" onchange="updateDistricts()"></select>
         </div>
+      
         <div>
           <label>อำเภอ</label><select id="district" onchange="updateSubdistricts()"></select>
         </div>
+      
         <div>
           <label>ตำบล</label><select id="subdistrict"></select>
         </div>
+      
+        <!-- รหัสไปรษณีย์ — ปรับสไตล์ให้เหมือนกล่อง input อื่น -->
         <div>
-          <label>รหัสไปรษณีย์</label><input id="zipcode" readonly>
+          <label>รหัสไปรษณีย์</label>
+          <input id="zipcode" type="text" readonly style="background:white; color:black;">
         </div>
-  
-        <div>
-          <label>เบอร์โทร</label><input id="phone" type="text">
-        </div>
+      
         <div>
           <label>นักกายภาพบำบัด</label>
           <select id="pt">
@@ -194,17 +201,21 @@
             <option>กภ.จริยา ฐินะกุล</option>
           </select>
         </div>
-  
+      
         <div>
           <label>แพ้ยา</label><input id="drug_allergy" type="text">
         </div>
+      
         <div>
           <label>โรคประจำตัว</label><input id="chronic_disease" type="text">
         </div>
+      
         <div style="grid-column: span 2;">
           <label>การวินิจฉัย</label><input id="diagnosis" type="text">
         </div>
+      
       </div>
+
   
       <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
         <button id="saveBtn" type="button" class="btn">➕ เพิ่มผู้ป่วย</button>
