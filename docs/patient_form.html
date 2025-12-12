@@ -253,15 +253,17 @@ flatpickr("#dob", {
   altFormat: "d F Y",
   dateFormat: "Y-m-d",
   onReady: function(selectedDates, dateStr, instance) {
-    if(dateStr){
-      const d = new Date(dateStr);
-      instance.altInput.value = `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear()+543}`;
+    if (selectedDates.length > 0) {
+      const d = selectedDates[0];
+      instance.altInput.value =
+        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
     }
   },
-  onChange: function(selectedDates, dateStr, instance){
-    if(selectedDates[0]){
+  onChange: function(selectedDates, dateStr, instance) {
+    if (selectedDates.length > 0) {
       const d = selectedDates[0];
-      instance.altInput.value = `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear()+543}`;
+      instance.altInput.value =
+        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
     }
   }
 });
@@ -479,7 +481,12 @@ function startEdit(id){
   document.getElementById('dob').value = p.dob;
   // update flatpickr altInput if exists
   const fp = document.querySelector("#dob");
-  if(fp && p.dob) fp._flatpickr && fp._flatpickr.setDate(p.dob, true);
+  if (fp && p.dob && fp._flatpickr) {
+    fp._flatpickr.setDate(p.dob, true);
+    const d = new Date(p.dob);
+    fp._flatpickr.altInput.value =
+      `${d.getDate()} ${fp._flatpickr.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
+  }
   document.getElementById('insurance').value = p.insurance || '';
   document.getElementById('house_no').value = p.house_no || '';
   document.getElementById('moo').value = p.moo || '';
