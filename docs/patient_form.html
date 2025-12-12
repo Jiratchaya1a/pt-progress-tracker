@@ -289,7 +289,6 @@
     </div>
 
     <div style="overflow:auto">
-      <table id="patientTable">
         <thead>
           <tr>
             <th>#</th>
@@ -300,6 +299,8 @@
             <th>ที่อยู่</th>
             <th>เบอร์</th>
             <th>Dx</th>
+            <th>แพทย์</th>         
+            <th>วันที่บันทึก</th>  
             <th>จัดการ</th>
           </tr>
         </thead>
@@ -551,6 +552,8 @@ function renderTable(filter=''){
         <td>${escapeHtml(addr)}</td>
         <td>${escapeHtml(p.phone)}</td>
         <td>${escapeHtml(p.diagnosis)}</td>
+        <td>${escapeHtml(p.doctor || "")}</td>
+        <td>${escapeHtml(p.record_date || "")}</td>
         <td>
           <div style="display:flex;gap:6px">
             <button class="qr-btn" onclick="openQR('${p.id}')">QR</button>
