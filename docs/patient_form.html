@@ -554,8 +554,8 @@ function renderTable(filter=''){
         <td>${escapeHtml(addr)}</td>
         <td>${escapeHtml(p.phone)}</td>
         <td>${escapeHtml(p.diagnosis)}</td>
-        <td>${escapeHtml(p.doctor || "")}</td>
-        <td>${escapeHtml(p.record_date || "")}</td>
+        <td>${escapeHtml(p.pt || "")}</td>
+       <td>${escapeHtml(p.created_at ? new Date(p.created_at).toLocaleDateString("th-TH") : "")}</td>
         <td>
           <div style="display:flex;gap:6px">
             <button class="qr-btn" onclick="openQR('${p.id}')">QR</button>
