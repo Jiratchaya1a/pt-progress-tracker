@@ -89,11 +89,8 @@
   <div class="top-row">
     <div>
     <h1 class="card" id="pageTitle" style="padding:14px 18px;display:inline-block">
-      แบบฟอร์มกรอกข้อมูลผู้ป่วย
+      แบบฟอร์มกรอกข้อมูลผู้ป่วย <span id="thaiDate"></span>
     </h1>
-    <div id="thaiDate" class="small" style="margin-top:4px;"></div>
-      <div class="small" style="margin-top:6px">เก็บข้อมูลในเครื่อง (LocalStorage) — ข้อมูลจะคงอยู่แม้ปิด/เปิดหน้าเว็บ</div>
-    </div>
     <div style="margin-left:auto" class="flex-row">
       <button class="btn" id="exportBtn" title="Export JSON">Export</button>
       <button class="btn btn-ghost" id="importBtn" title="Import JSON">Import</button>
@@ -282,6 +279,22 @@ function formatThaiDate(date = new Date()) {
   const y = date.getFullYear() + 543;
   return `${d} ${m} ${y}`;
 }
+
+/* ------------ วันที่ไทย (พ.ศ.) ------------ */
+function formatThaiDate(date = new Date()) {
+  const thMonths = [
+    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+  ];
+  const d = date.getDate();
+  const m = thMonths[date.getMonth()];
+  const y = date.getFullYear() + 543;
+  return `ประจำวันที่ ${d} ${m} ${y}`;
+}
+
+// แสดงวันที่ท้ายหัวข้อ
+document.getElementById("thaiDate").innerText = formatThaiDate();
+
 
 // เติมวันที่ลงหน้าเว็บ
 document.getElementById("thaiDate").innerText = `ประจำวันที่ ${formatThaiDate()}`;
