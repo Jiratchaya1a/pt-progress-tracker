@@ -1,0 +1,50 @@
+let addressData = {};
+
+fetch("data/thai-address.json")
+  .then(res => res.json())
+  .then(json => {
+    addressData = json;
+    loadProvinces();
+  });
+
+function loadProvinces() {
+  const provSelect = document.getElementById("province");
+  provSelect.innerHTML = '<option value="">-- เลือกจังหวัด --</option>';
+
+  Object.keys(addressData).forEach(prov => {
+    provSelect.innerHTML += `<option value="${prov}">${prov}</option>`;
+  });
+}
+
+function updateDistricts() {
+  const prov = document.getElementById("province").value;
+  const distSelect = document.getElementById("district");
+  distSelect.innerHTML = '<option value="">-- เลือกอำเภอ --</option>';
+  subdistrict.innerHTML = '<option value="">-- เลือกตำบล --</option>';
+  zipcode.value = "";
+
+  if (!prov) return;
+
+  Object.keys(addressData[prov]).forEach(dist => {
+    distSelect.innerHTML += `<option value="${dist}">${dist}</option>`;
+  });
+}
+
+function updateSubdistricts() {
+  const prov = province.value;
+  const dist = district.value;
+  const subSelect = document.getElementById("subdistrict");
+  subSelect.innerHTML = '<option value="">-- เลือกตำบล --</option>';
+  zipcode.value = "";
+
+  if (!prov || !dist) return;
+
+  addressData[prov][dist].forEach(item => {
+    subSelect.innerHTML += `<option value="${item.name}" data-zip="${item.zip}">${item.name}</option>`;
+  });
+}
+
+subdistrict.addEventListener("change", () => {
+  const zip = subdistrict.selectedOptions[0]?.dataset.zip || "";
+  zipcode.value = zip;
+});
