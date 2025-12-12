@@ -93,15 +93,18 @@
 <div class="container">
   <div class="top-row">
     <div>
-    <h1 class="card" id="pageTitle" style="padding:14px 18px;display:inline-block">
-      แบบฟอร์มกรอกข้อมูลผู้ป่วย <span id="thaiDate"></span>
-    </h1>
+      <h1 class="card" id="pageTitle" style="padding:14px 18px;display:inline-block">
+        แบบฟอร์มกรอกข้อมูลผู้ป่วย <span id="thaiDate"></span>
+      </h1>
+    </div>
+  
     <div style="margin-left:auto" class="flex-row">
-      <button class="btn" id="exportBtn" title="Export JSON">Export</button>
-      <button class="btn btn-ghost" id="importBtn" title="Import JSON">Import</button>
-      <button class="btn btn-ghost" id="clearAllBtn" title="ลบข้อมูลทั้งหมด">Clear All</button>
+      <button class="btn" id="exportBtn">Export</button>
+      <button class="btn btn-ghost" id="importBtn">Import</button>
+      <button class="btn btn-ghost" id="clearAllBtn">Clear All</button>
     </div>
   </div>
+
 
   <div class="card" style="margin-bottom:14px;">
     <form id="patientForm" onsubmit="return false;">
