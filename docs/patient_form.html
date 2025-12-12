@@ -447,7 +447,16 @@ document.getElementById('saveBtn').addEventListener('click', () => {
     },
     body: JSON.stringify(p)
   })
-  .then(res => res.json())
+  .then(async res => {
+      const text = await res.text();
+      try {
+          const json = JSON.parse(text);
+          console.log("✔ ส่งข้อมูลไป Google Sheet สำเร็จ:", json);
+      } catch (err) {
+          console.error("❌ ไม่ใช่ JSON:", text);
+          alert("Google Script ตอบกลับไม่ถูกต้อง:\n" + text);
+      }
+  })
   .then(result => {
     console.log("✔ ส่งข้อมูลไป Google Sheets สำเร็จ:", result);
   })
