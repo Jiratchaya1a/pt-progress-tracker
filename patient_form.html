@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>แบบฟอร์มผู้ป่วย</title>
+
+<!-- Flatpickr Thai -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+  body { font-family:'Segoe UI', Tahoma, Geneva, Verdana,sans-serif; padding:20px; background:#f4f6f8; }
+  h2,h3{color:#333;}
+  input,select{width:100%;padding:6px;border-radius:5px;border:1px solid #ccc;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;}
+  .row>div{flex:1;min-width:130px;}
+  button{background:#1976d2;color:white;border:none;padding:8px 12px;border-radius:5px;cursor:pointer;font-size:13px;}
+  button:hover{background:#115293;}
+
+  .btn-del { background:#d32f2f !important; }
+  .btn-del:hover { background:#9a0007 !important; }
+
+  table{width:100%;border-collapse:collapse;margin-top:10px;background:white;}
+  th{background:#1976d2;color:white;padding:8px;}
+  td{padding:8px;border-bottom:1px solid #ddd;font-size:12px;}
+  tr:hover{background:#f1f1f1;}
+
+  #qrModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;}
+  #qrBox{background:white;padding:20px;border-radius:10px;text-align:center;width:300px;}
+  #qrPatientName{font-weight:bold;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<h2>แบบฟอร์มกรอกข้อมูลผู้ป่วย</h2>
+
+<!-- ฟอร์ม -->
+<div class="row">
+  <div><label>HN:</label><input id="hn"></div>
+  <div><label>CID:</label><input id="cid"></div>
+  <div><label>AN:</label><input id="an"></div>
+</div>
+
+<div class="row">
+  <div><label>ชื่อ-นามสกุล:</label><input id="fullname"></div>
+  <div><label>เพศ:</label>
+    <select id="gender"><option>ชาย</option><option>หญิง</option></select>
+  </div>
+  <div><label>วันเกิด:</label><input id="dob"></div>
+  <div>
+    <label>สิทธิการรักษา:</label>
+    <select id="insurance">
+      <option value="">-- เลือกสิทธิการรักษา --</option>
+      <option>บัตรทอง (UC)</option>
+      <option>บัตรทอง ท.1</option>
+      <option>บัตรทอง ท.2</option>
+      <option>บัตรทอง ท.3</option>
+      <option>สวัสดิการข้าราชการ (เบิกได้)</option>
+      <option>สวัสดิการข้าราชการ ทหาร/ตำรวจ</option>
+      <option>สวัสดิการครอบครัวข้าราชการ</option>
+      <option>ประกันสังคม (SSO)</option>
+      <option>ประกันสังคม ม.33</option>
+      <option>ประกันสังคม ม.39</option>
+      <option>ประกันสังคม ม.40</option>
+      <option>ผู้สูงอายุ (เบิก อปท.)</option>
+      <option>เด็กแรกเกิด</option>
+      <option>ท้องเสีย/อุบัติเหตุฉุกเฉิน (UCEP Plus)</option>
+      <option>ข้าราชการท้องถิ่น</option>
+      <option>รัฐวิสาหกิจ</option>
+      <option>กองทุนผู้ป่วยฉุกเฉิน (UCEP)</option>
+      <option>กองทุนฟื้นฟูสมรรถภาพ</option>
+      <option>กองทุนโรคเรื้อรัง</option>
+      <option>ต่างด้าว (บัตรชมพู)</option>
+      <option>ชำระเงินเอง</option>
+    </select>
+  </div>
+</div>
+
+<div class="row">
+  <div><label>บ้านเลขที่:</label><input id="house_no"></div>
+  <div><label>หมู่:</label><input id="moo"></div>
+  <div><label>จังหวัด:</label><select id="province" onchange="updateDistricts()"></select></div>
+  <div><label>อำเภอ:</label><select id="district" onchange="updateSubdistricts()"></select></div>
+  <div><label>ตำบล:</label><select id="subdistrict"></select></div>
+  <div><label>รหัสไปรษณีย์:</label><input id="zipcode" readonly></div>
+</div>
+
+<div class="row">
+  <div><label>เบอร์โทร:</label><input id="phone"></div>
+  <div>
+  <label>นักกายภาพบำบัด:</label>
+  <select id="pt">
+    <option value="">-- เลือกนักกายภาพบำบัด --</option>
+    <option>กภ.เนติมา ศรีสุวรรณ</option>
+    <option>กภ.วิทยา พรหมจรัส</option>
+    <option>กภ.ปิ่นชนก พรหมสุวรรณ์ </option>
+    <option>กภ.จริยา ฐินะกุล</option>
+  </select>
+</div>
+</div>
+
+<div class="row">
+  <div><label>แพ้ยา:</label><input id="drug_allergy"></div>
+  <div><label>โรคประจำตัว:</label><input id="chronic_disease"></div>
+  <div style="flex:2"><label>การวินิจฉัย:</label><input id="diagnosis"></div>
+</div>
+
+<button onclick="addPatient()">➕ เพิ่มผู้ป่วย</button>
+
+<h3>รายการผู้ป่วย</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th><th>HN</th><th>ชื่อ</th><th>อายุ</th><th>เพศ</th>
+      <th>ที่อยู่</th><th>เบอร์</th><th>Dx</th><th>จัดการ</th>
+    </tr>
+  </thead>
+  <tbody id="patientTable"></tbody>
+</table>
+
+<!-- Modal QR -->
+<div id="qrModal">
+  <div id="qrBox">
+    <h3>QR Code สำหรับแบบประเมิน</h3>
+    <div id="qrcode"></div>
+    <div id="qrPatientName"></div>
+    <button onclick="qrModal.style.display='none'">ปิด</button>
+  </div>
+</div>
+
+<script>
+/* --- Flatpickr Thai + แสดง พ.ศ. --- */
+flatpickr("#dob", {
+  locale: "th",
+  altInput: true,
+  altFormat: "d F Y",
+  dateFormat: "Y-m-d",
+  onReady: function(selectedDates, dateStr, instance) {
+    if(dateStr){
+      const d = new Date(dateStr);
+      instance.altInput.value = `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear()+543}`;
+    }
+  },
+  onChange: function(selectedDates, dateStr, instance){
+    if(selectedDates[0]){
+      const d = selectedDates[0];
+      instance.altInput.value = `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear()+543}`;
+    }
+  }
+});
+
+/* --- ข้อมูลจังหวัดภาคใต้ --- */
+const data = {
+  "ชุมพร": { "เมืองชุมพร":[{sub:"บางหมาก",zip:"86000"},{sub:"ท่าแซะ",zip:"86120"}], "สวี":[{sub:"นาโพธิ์",zip:"86130"},{sub:"ครน",zip:"86130"},{sub:"ทุ่งระยะ",zip:"86130"},{sub:"ท่าหิน",zip:"86130"},{sub:"ด่านสวี",zip:"86130"}] },
+  "สงขลา": { "เมืองสงขลา":[{sub:"บ่อยาง",zip:"90000"},{sub:"เขารูปช้าง",zip:"90000"}], "หาดใหญ่":[{sub:"หาดใหญ่ใน",zip:"90110"},{sub:"คอหงส์",zip:"90110"}] },
+  "นครศรีธรรมราช": { "เมืองนครศรีธรรมราช":[{sub:"ปากพูน",zip:"80000"},{sub:"ท่าเรือ",zip:"80000"}], "พรหมคีรี":[{sub:"พรหมโลก",zip:"80220"}] },
+  "ภูเก็ต": { "เมืองภูเก็ต":[{sub:"ตลาดใหญ่",zip:"83000"},{sub:"รัษฎา",zip:"83000"}] },
+  "สุราษฎร์ธานี": { "เมืองสุราษฎร์ธานี":[{sub:"บางใบไม้",zip:"84000"},{sub:"มะขามเตี้ย",zip:"84000"}], "กาญจนดิษฐ์":[{sub:"คลองพา",zip:"84140"}] }
+};
+
+/* --- Dropdown dependent --- */
+function updateProvinces(){
+  province.innerHTML='<option value="">-- เลือกจังหวัด --</option>';
+  for(let p in data) province.innerHTML+=`<option>${p}</option>`;
+}
+updateProvinces();
+
+function updateDistricts(){
+  district.innerHTML='<option value="">-- เลือกอำเภอ --</option>';
+  subdistrict.innerHTML='<option value="">-- เลือกตำบล --</option>';
+  zipcode.value='';
+  if(province.value)
+    for(let d in data[province.value]) district.innerHTML+=`<option>${d}</option>`;
+}
+
+function updateSubdistricts(){
+  subdistrict.innerHTML='<option value="">-- เลือกตำบล --</option>';
+  zipcode.value='';
+  if(district.value){
+    data[province.value][district.value].forEach(s=>subdistrict.innerHTML+=`<option value="${s.sub}" data-zip="${s.zip}">${s.sub}</option>`);
+  }
+}
+
+subdistrict.addEventListener('change',()=>{
+  const sel=subdistrict.selectedOptions[0];
+  if(sel) zipcode.value=sel.dataset.zip;
+});
+
+/* --- คำนวณอายุ --- */
+function calculateAge(dob){
+  const b=new Date(dob),t=new Date();
+  let y=t.getFullYear()-b.getFullYear();
+  let m=t.getMonth()-b.getMonth();
+  let d=t.getDate()-b.getDate();
+  if(d<0){m--;d+=30;}
+  if(m<0){y--;m+=12;}
+  return `${y} ปี ${m} เดือน ${d} วัน`;
+}
+
+/* --- บันทึกผู้ป่วย --- */
+let patients=[];
+function addPatient(){
+  const p={
+    hn:hn.value.trim(),
+    fullname:fullname.value.trim(),
+    dob:dob.value,
+    gender:gender.value,
+    insurance:insurance.value,
+    house_no:house_no.value.trim(),
+    moo:moo.value.trim(),
+    province:province.value,
+    district:district.value,
+    subdistrict:subdistrict.value,
+    zipcode:zipcode.value,
+    phone:phone.value.trim(),
+    pt:pt.value.trim(),
+    drug_allergy:drug_allergy.value.trim(),
+    chronic_disease:chronic_disease.value.trim(),
+    diagnosis:diagnosis.value.trim()
+  };
+  if(!p.hn||!p.fullname||!p.dob||!p.diagnosis){alert('กรุณากรอก HN, ชื่อ, วันเกิด และ การวินิจฉัย');return;}
+  p.age=calculateAge(p.dob);
+  patients.push(p);
+  renderTable();
+  ['hn','fullname','dob','house_no','moo','province','district','subdistrict','zipcode','phone','pt','drug_allergy','chronic_disease','diagnosis'].forEach(id=>document.getElementById(id).value='');
+  gender.selectedIndex=0; insurance.selectedIndex=0;
+}
+
+/* --- Render Table --- */
+function renderTable(){
+  const tb=document.getElementById("patientTable");
+  tb.innerHTML="";
+  patients.forEach((p,i)=>{
+    const addr=`${p.house_no} หมู่ ${p.moo} ${p.subdistrict} ${p.district} ${p.province}`;
+    tb.innerHTML+=`
+      <tr>
+        <td>${i+1}</td>
+        <td>${p.hn}</td>
+        <td>${p.fullname}</td>
+        <td>${p.age}</td>
+        <td>${p.gender}</td>
+        <td>${addr}</td>
+        <td>${p.phone}</td>
+        <td>${p.diagnosis}</td>
+        <td>
+          <button onclick="generateQR(${i})">📱 QR</button>
+          <button class="btn-del" onclick="deletePatient(${i})">🗑️ ลบ</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* --- ฟังก์ชันลบผู้ป่วย --- */
+function deletePatient(index){
+  if(confirm("ต้องการลบข้อมูลผู้ป่วยคนนี้หรือไม่?")){
+    patients.splice(index,1);
+    renderTable();
+  }
+}
+
+/* --- สร้าง QR --- */
+const assessmentBaseUrl = "assessment_form.html";
+function generateQR(index){
+  const p = patients[index];
+  const link = `${assessmentBaseUrl}?hn=${encodeURIComponent(p.hn)}&name=${encodeURIComponent(p.fullname)}`;
+  document.getElementById("qrcode").innerHTML = "";
+  document.getElementById("qrPatientName").innerText = p.fullname;
+  new QRCode(document.getElementById("qrcode"), {
+      text: link,
+      width: 220,
+      height: 220
+  });
+  qrModal.style.display = "flex";
+}
+</script>
+</body>
+</html>

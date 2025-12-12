@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>แบบประเมินผู้ป่วยกายภาพบำบัด</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    padding: 40px;
+    margin: 0;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.assessment-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.assessment-card h2 {
+    margin-top: 0;
+}
+
+.faces {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.face {
+    font-size: 50px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.face:hover {
+    transform: scale(1.3);
+}
+
+.selected {
+    border: 3px solid #ff9800;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.result {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+button {
+    font-size: 20px;
+    padding: 12px 30px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff9800;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #e68a00;
+}
+</style>
+</head>
+<body>  
+
+<h1>แบบประเมินผู้ป่วยกายภาพบำบัด ของนายวิทยา Model.</h1>
+
+<!-- =======================
+     ข้อ 1+2 (Grid)
+======================= -->
+<div class="grid-container">
+    <!-- 1) อาการปวด -->
+    <div class="assessment-card">
+        <h2>1) อาการปวด (Pain) </h2>
+        <p>เลือกระดับอาการปวดของคุณ</p>
+        <div class="faces" id="painFaces">
+            <div class="face" onclick="selectPain(0)">😀</div>
+            <div class="face" onclick="selectPain(1)">🙂</div>
+            <div class="face" onclick="selectPain(2)">😐</div>
+            <div class="face" onclick="selectPain(3)">☹️</div>
+            <div class="face" onclick="selectPain(4)">😣</div>
+            <div class="face" onclick="selectPain(5)">😭</div>
+        </div>
+        <div id="resultPain" class="result">ยังไม่ได้เลือกระดับความปวด</div>
+    </div>
+
+    <!-- 2) ช่วงการเคลื่อนไหว -->
+    <div class="assessment-card">
+        <h2>2) ช่วงการเคลื่อนไหว (ROM)</h2>
+        <p>เลือกช่วงการเคลื่อนไหวของคุณ</p>
+        <div class="faces" id="romFaces">
+            <div class="face" onclick="selectRom(0)">😀</div>
+            <div class="face" onclick="selectRom(1)">🙂</div>
+            <div class="face" onclick="selectRom(2)">😐</div>
+            <div class="face" onclick="selectRom(3)">☹️</div>
+            <div class="face" onclick="selectRom(4)">😣</div>
+        </div>
+        <div id="resultRom" class="result">ยังไม่ได้เลือกช่วงการเคลื่อนไหว</div>
+    </div>
+</div>
+
+<!-- =======================
+     ข้อ 3+4 (Grid)
+======================= -->
+<div class="grid-container">
+    <!-- 3) กำลังกล้ามเนื้อ -->
+    <div class="assessment-card">
+        <h2>3) กำลังกล้ามเนื้อ</h2>
+        <p>เลือกกำลังกล้ามเนื้อของคุณ</p>
+        <div class="faces" id="strengthFaces">
+            <div class="face" onclick="selectStrength(0)">🏋️‍♂️</div>
+            <div class="face" onclick="selectStrength(1)">💪</div>
+            <div class="face" onclick="selectStrength(2)">👍</div>
+            <div class="face" onclick="selectStrength(3)">🤏</div>
+            <div class="face" onclick="selectStrength(4)">👎</div>
+         <div class="face" onclick="selectStrength(5)">❌</div>
+        </div>
+        <div id="resultStrength" class="result">ยังไม่ได้เลือกกำลังกล้ามเนื้อ</div>
+    </div>
+
+    <!-- 4) ความสามารถทำกิจวัตรประจำวัน -->
+    <div class="assessment-card">
+        <h2>4) ความสามารถทำกิจวัตรประจำวัน (ADL)</h2>
+        <p>เลือกความสามารถทำกิจวัตรของคุณ</p>
+        <div class="faces" id="adlFaces">
+            <div class="face" onclick="selectAdl(0)">🏃‍♂️</div>
+            <div class="face" onclick="selectAdl(1)">🚶‍♂️</div>
+            <div class="face" onclick="selectAdl(2)">🪑</div>
+            <div class="face" onclick="selectAdl(3)">🛏️</div>
+            <div class="face" onclick="selectAdl(4)">❌</div>
+        </div>
+        <div id="resultAdl" class="result">ยังไม่ได้เลือกความสามารถทำกิจวัตร</div>
+    </div>
+</div>
+
+<!-- =======================
+     ข้อ 5) ผลหลังการรักษา
+======================= -->
+<div class="assessment-card" style="margin-bottom:50px;">
+    <h2>5) ความพึงพอใจหลังการรักษา</h2>
+    <p>เลือกความพึงพอใจหลังการรักษา</p>
+    <div class="faces" id="outcomeFaces">
+        <div class="face" onclick="selectOutcome(0)">😀</div>
+        <div class="face" onclick="selectOutcome(1)">🙂</div>
+        <div class="face" onclick="selectOutcome(2)">😐</div>
+        <div class="face" onclick="selectOutcome(3)">☹️</div>
+        <div class="face" onclick="selectOutcome(4)">😣</div>
+    </div>
+    <div id="resultOutcome" class="result">ยังไม่ได้เลือกความพึงพอใจ</div>
+</div>
+
+<button onclick="sendData()">ส่งผลประเมิน</button>
+
+<script>
+let assessment = {pain:null, rom:null, strength:null, adl:null, outcome:null};
+
+function selectPain(level){ updateSelection('painFaces', 'resultPain', ["0/10 = ไม่ปวดเลย","2/10 = ปวดเล็กน้อย","4/10 = ปวดปานกลาง","6/10 = ปวดมาก","8/10 = ปวดมากที่สุด","10/10 = ปวดรุนแรง"], level,'pain'); }
+function selectRom(level){ updateSelection('romFaces', 'resultRom', ["Normal = เคลื่อนไหวได้ปกติ","Good = เคลื่อนไหวได้ดี","Fair = เคลื่อนไหวได้น้อย","Poor = เคลื่อนไหวได้น้อยมาก","No = ไม่สามารถเคลื่อนไหวได้เลย"], level,'rom'); }
+function selectStrength(level){ updateSelection('strengthFaces','resultStrength',["5 = แข็งแรงมาก","4 = แข็งแรง","3 = แข็งแรงปานกลาง","2 = อ่อนแรง","1 = อ่อนแรงมาก","0 = ไม่มีแรง"],level,'strength'); }
+function selectAdl(level){ updateSelection('adlFaces','resultAdl',["Normal = ทำได้ปกติ","Good = ทำได้เกือบปกติ","Fair = ทำได้บางส่วน","Poor = ทำได้น้อยมาก","No = ทำไม่ได้เลย"],level,'adl'); }
+function selectOutcome(level){ updateSelection('outcomeFaces','resultOutcome',["5 = ดีมาก","4 = ดี","3 = ปานกลาง","2 = พอใช้","1 = ควรปรับปรุง"],level,'outcome'); }
+
+function updateSelection(containerId,resultId,textArray,level,key){
+    const faces = document.querySelectorAll('#'+containerId+' .face');
+    faces.forEach(f=>f.classList.remove('selected'));
+    faces[level].classList.add('selected');
+    document.getElementById(resultId).innerText = textArray[level];
+    assessment[key] = textArray[level];
+}
+
+function sendData(){
+    if(!assessment.pain || !assessment.rom || !assessment.strength || !assessment.adl || !assessment.outcome){
+        alert("กรุณาเลือกทุกหัวข้อก่อนส่งข้อมูล");
+        return;
+    }
+    fetch("YOUR_WEB_APP_URL_HERE", {
+        method:"POST",
+        body:JSON.stringify(assessment),
+        headers:{'Content-Type':'application/json'}
+    }).then(r=>r.json()).then(data=>{
+        if(data.status==="success"){ alert("ส่งข้อมูลเรียบร้อย!"); } 
+        else{ alert("เกิดข้อผิดพลาด"); }
+    }).catch(err=>alert("เกิดข้อผิดพลาด: "+err));
+}
+</script>
+
+</body>
+</html>
