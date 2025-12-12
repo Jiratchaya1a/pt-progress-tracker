@@ -6,7 +6,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>แบบฟอร์มกรอกข้อมูลผู้ป่วย</title>
+<title>แบบฟอร์มผู้ป่วย</title>
 
 <!-- Flatpickr Thai -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -22,6 +22,7 @@
     --card:#ffffff;
     --primary:#1976d2;
     --primary-dark:#115293;
+    --accent:#00a89b;
     --muted:#6b7280;
     --danger:#d32f2f;
   }
@@ -48,21 +49,10 @@
     gap:12px;
   }
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-  input[type="text"], select{
+  input[type="text"], input[type="date"], select{
     width:100%;
-    padding:8px 10px;
-    border-radius:8px;
-    border:1px solid #e6e9ef;
-    font-size:14px;
-    background:#fff;
-  }
-  #zipcode{
-    background:#eef3ff;
-    border:1px solid #b9c9ff;
-    font-weight:600;
-    text-align:center;
-    letter-spacing:1px;
-    color:#1a237e;
+    padding:8px 10px;border-radius:8px;border:1px solid #e6e9ef;
+    font-size:14px;background:#fff;
   }
   .btn {
     background:var(--primary); color:#fff; border:none; padding:10px 14px; border-radius:10px; cursor:pointer;
@@ -71,55 +61,68 @@
   .btn:hover{background:var(--primary-dark)}
   .btn-ghost{background:transparent;border:1px solid #d1d5db;color:var(--muted)}
   .btn-danger{background:var(--danger)}
+  .actions{display:flex;gap:8px;align-items:center}
   .small{font-size:13px;color:var(--muted)}
   table{width:100%;border-collapse:collapse;margin-top:14px;background:var(--card);border-radius:8px;overflow:hidden}
   th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #f1f5f9;font-size:13px}
   th{background:linear-gradient(90deg,rgba(25,118,210,0.12),rgba(25,118,210,0.06));color:#0f1724}
   tr:hover td{background:#fbfdff}
-
+  .flex-row{display:flex;gap:10px;align-items:center}
+  .tag{padding:6px 8px;border-radius:8px;background:#eef6ff;color:var(--primary);font-size:12px}
+  .qr-btn{background:#0b74b3;padding:6px 10px;border-radius:8px;color:white;border:none;cursor:pointer}
+  .edit-btn{background:#0b7a4f;padding:6px 10px;border-radius:8px;color:white;border:none;cursor:pointer}
+  .del-btn{background:var(--danger);padding:6px 10px;border-radius:8px;color:white;border:none;cursor:pointer}
+  .muted-td{color:var(--muted);font-size:12px}
+  .footer-note{margin-top:12px;font-size:12px;color:var(--muted)}
   /* Modal */
-  #qrModal{display:none;position:fixed;inset:0;background:rgba(10,15,25,0.55);
-    justify-content:center;align-items:center;padding:20px;z-index:9999}
+  #qrModal{display:none;position:fixed;inset:0;background:rgba(10,15,25,0.55);justify-content:center;align-items:center;padding:20px;z-index:9999}
   #qrBox{background:var(--card);padding:20px;border-radius:12px;width:320px;max-width:95%;text-align:center}
+  #qrcode{margin:8px auto}
+  /* responsive */
+  @media (max-width:720px){
+    .top-row{flex-direction:column;align-items:stretch}
+  }
 </style>
 </head>
 <body>
 <div class="container">
-
-  <!-- TITLE WITH THAI DATE -->
   <div class="top-row">
     <div>
-      <h1 class="card" id="pageTitle" style="padding:14px 18px;display:inline-block"></h1>
-      <div class="small" style="margin-top:6px">
-        เก็บข้อมูลในเครื่อง (LocalStorage) — ข้อมูลจะคงอยู่แม้ปิด/เปิดหน้าเว็บ
-      </div>
+    <h1 class="card" id="pageTitle" style="padding:14px 18px;display:inline-block">
+      แบบฟอร์มกรอกข้อมูลผู้ป่วย
+    </h1>
+    <div id="thaiDate" class="small" style="margin-top:4px;"></div>
+      <div class="small" style="margin-top:6px">เก็บข้อมูลในเครื่อง (LocalStorage) — ข้อมูลจะคงอยู่แม้ปิด/เปิดหน้าเว็บ</div>
     </div>
-
-    <div style="margin-left:auto;display:flex;gap:10px;">
-      <button class="btn" id="exportBtn">Export</button>
-      <button class="btn btn-ghost" id="importBtn">Import</button>
-      <button class="btn btn-ghost" id="clearAllBtn">Clear All</button>
+    <div style="margin-left:auto" class="flex-row">
+      <button class="btn" id="exportBtn" title="Export JSON">Export</button>
+      <button class="btn btn-ghost" id="importBtn" title="Import JSON">Import</button>
+      <button class="btn btn-ghost" id="clearAllBtn" title="ลบข้อมูลทั้งหมด">Clear All</button>
     </div>
   </div>
 
-  <!-- FORM -->
   <div class="card" style="margin-bottom:14px;">
     <form id="patientForm" onsubmit="return false;">
       <div class="form-grid">
+        <div>
+          <label>HN</label><input id="hn" type="text" placeholder="รหัส HN">
+        </div>
+        <div>
+          <label>CID</label><input id="cid" type="text" placeholder="เลขบัตรประชาชน (ถ้ามี)">
+        </div>
+        <div>
+          <label>AN</label><input id="an" type="text" placeholder="AN (ถ้ามี)">
+        </div>
 
-        <div><label>HN</label><input id="hn" type="text"></div>
-        <div><label>CID</label><input id="cid" type="text"></div>
-        <div><label>AN</label><input id="an" type="text"></div>
-
-        <div><label>ชื่อ-นามสกุล</label><input id="fullname" type="text"></div>
+        <div>
+          <label>ชื่อ-นามสกุล</label><input id="fullname" type="text" placeholder="ชื่อ นามสกุล">
+        </div>
         <div>
           <label>เพศ</label>
           <select id="gender"><option>ชาย</option><option>หญิง</option></select>
         </div>
-
         <div>
-          <label>วันเกิด</label>
-          <input id="dob" type="text" placeholder="เลือกวันเกิด">
+          <label>วันเกิด</label><input id="dob" type="text" placeholder="เลือกวันเกิด">
         </div>
 
         <div style="grid-column: span 2;">
@@ -127,283 +130,502 @@
           <select id="insurance">
             <option value="">-- เลือกสิทธิการรักษา --</option>
             <option>บัตรทอง (UC)</option>
-            <option>ประกันสังคม</option>
-            <option>สวัสดิการข้าราชการ</option>
+            <option>บัตรทอง ท.1</option>
+            <option>บัตรทอง ท.2</option>
+            <option>บัตรทอง ท.3</option>
+            <option>สวัสดิการข้าราชการ (เบิกได้)</option>
+            <option>สวัสดิการข้าราชการ ทหาร/ตำรวจ</option>
+            <option>สวัสดิการครอบครัวข้าราชการ</option>
+            <option>ประกันสังคม (SSO)</option>
+            <option>ประกันสังคม ม.33</option>
+            <option>ประกันสังคม ม.39</option>
+            <option>ประกันสังคม ม.40</option>
+            <option>ผู้สูงอายุ (เบิก อปท.)</option>
+            <option>เด็กแรกเกิด</option>
+            <option>ท้องเสีย/อุบัติเหตุฉุกเฉิน (UCEP Plus)</option>
+            <option>ข้าราชการท้องถิ่น</option>
+            <option>รัฐวิสาหกิจ</option>
+            <option>กองทุนผู้ป่วยฉุกเฉิน (UCEP)</option>
+            <option>กองทุนฟื้นฟูสมรรถภาพ</option>
+            <option>กองทุนโรคเรื้อรัง</option>
+            <option>ต่างด้าว (บัตรชมพู)</option>
             <option>ชำระเงินเอง</option>
           </select>
         </div>
 
-        <div><label>บ้านเลขที่</label><input id="house_no" type="text"></div>
-        <div><label>หมู่</label><input id="moo" type="text"></div>
-        <div><label>จังหวัด</label><select id="province" onchange="updateDistricts()"></select></div>
-        <div><label>อำเภอ</label><select id="district" onchange="updateSubdistricts()"></select></div>
-        <div><label>ตำบล</label><select id="subdistrict"></select></div>
-        <div><label>รหัสไปรษณีย์</label><input id="zipcode" readonly></div>
+        <div>
+          <label>บ้านเลขที่</label><input id="house_no" type="text">
+        </div>
+        <div>
+          <label>หมู่</label><input id="moo" type="text">
+        </div>
+        <div>
+          <label>จังหวัด</label><select id="province" onchange="updateDistricts()"></select>
+        </div>
+        <div>
+          <label>อำเภอ</label><select id="district" onchange="updateSubdistricts()"></select>
+        </div>
+        <div>
+          <label>ตำบล</label><select id="subdistrict"></select>
+        </div>
+        <div>
+          <label>รหัสไปรษณีย์</label><input id="zipcode" readonly>
+        </div>
 
-        <div><label>เบอร์โทร</label><input id="phone" type="text"></div>
-        <div><label>นักกายภาพบำบัด</label>
+        <div>
+          <label>เบอร์โทร</label><input id="phone" type="text">
+        </div>
+        <div>
+          <label>นักกายภาพบำบัด</label>
           <select id="pt">
-            <option value="">-- เลือก --</option>
-            <option>กภ.เนติมา</option>
-            <option>กภ.วิทยา</option>
-            <option>กภ.ปิ่นชนก</option>
-            <option>กภ.จริยา</option>
+            <option value="">-- เลือกนักกายภาพบำบัด --</option>
+            <option>กภ.เนติมา ศรีสุวรรณ</option>
+            <option>กภ.วิทยา พรหมจรัส</option>
+            <option>กภ.ปิ่นชนก พรหมสุวรรณ์</option>
+            <option>กภ.จริยา ฐินะกุล</option>
           </select>
         </div>
 
-        <div><label>แพ้ยา</label><input id="drug_allergy" type="text"></div>
-        <div><label>โรคประจำตัว</label><input id="chronic_disease" type="text"></div>
+        <div>
+          <label>แพ้ยา</label><input id="drug_allergy" type="text">
+        </div>
+        <div>
+          <label>โรคประจำตัว</label><input id="chronic_disease" type="text">
+        </div>
         <div style="grid-column: span 2;">
           <label>การวินิจฉัย</label><input id="diagnosis" type="text">
         </div>
-
       </div>
 
       <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
         <button id="saveBtn" type="button" class="btn">➕ เพิ่มผู้ป่วย</button>
         <button id="cancelEditBtn" type="button" class="btn btn-ghost" style="display:none">ยกเลิกการแก้ไข</button>
-        <div style="margin-left:auto" class="small">ผู้ป่วยทั้งหมด: <span id="totalCount">0</span></div>
+        <div style="margin-left:auto" class="small muted-td">ผู้ป่วยทั้งหมด: <span id="totalCount">0</span></div>
       </div>
     </form>
   </div>
 
-  <!-- TABLE -->
+  <!-- table -->
   <div class="card">
-    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-      <div class="small">รายการผู้ป่วย</div>
-      <input id="searchInput" placeholder="ค้นหา..." style="padding:8px;border-radius:8px;border:1px solid #ddd">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="small">รายการผู้ป่วย (เรียงลำดับล่าสุดด้านบน)</div>
+      <div><input id="searchInput" placeholder="ค้นหา HN/ชื่อ/เบอร์..." style="padding:8px;border-radius:8px;border:1px solid #e6e9ef"></div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>#</th><th>HN</th><th>ชื่อ</th><th>อายุ</th><th>เพศ</th><th>ที่อยู่</th><th>เบอร์</th><th>Dx</th><th>จัดการ</th>
-        </tr>
-      </thead>
-      <tbody id="patientTbody"></tbody>
-    </table>
+    <div style="overflow:auto">
+      <table id="patientTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>HN</th>
+            <th>ชื่อ</th>
+            <th>อายุ</th>
+            <th>เพศ</th>
+            <th>ที่อยู่</th>
+            <th>เบอร์</th>
+            <th>Dx</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="patientTbody"></tbody>
+      </table>
+    </div>
+    <div class="footer-note">TIP: กด "QR" เพื่อสร้างคิวอาร์แบบประเมินที่ลิงก์ไปยังไฟล์ assessment_form.html (ต้องมีไฟล์นั้นอยู่บนเว็บเดียวกัน)</div>
   </div>
+
 </div>
 
-<!-- QR MODAL -->
+<!-- QR Modal -->
 <div id="qrModal">
-  <div id="qrBox">
-    <h3>QR Code</h3>
+  <div id="qrBox" class="card">
+    <h3 style="margin:0 0 8px 0">QR Code สำหรับแบบประเมิน</h3>
     <div id="qrcode"></div>
-    <div id="qrPatientName" style="margin-top:10px;font-weight:600"></div>
-    <button id="qrClose" class="btn btn-ghost" style="margin-top:14px">ปิด</button>
+    <div id="qrPatientName" style="font-weight:600;margin-top:10px"></div>
+    <div style="margin-top:12px;display:flex;justify-content:center;gap:10px">
+      <button id="qrClose" class="btn btn-ghost">ปิด</button>
+      <a id="qrOpenLink" class="btn" target="_blank" style="text-decoration:none;color:white">เปิดลิงก์</a>
+    </div>
   </div>
 </div>
 
 <script>
-/* ----------- Thai Date Title ----------- */
-function formatThaiDate(d=new Date()){
-  const thMonths=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-  return `${d.getDate()} ${thMonths[d.getMonth()]} ${d.getFullYear()+543}`;
-}
-document.getElementById("pageTitle").innerHTML =
-  `แบบฟอร์มกรอกข้อมูลผู้ป่วย ประจำวันที่ ${formatThaiDate()}`;
-
-/* ----------- Flatpickr DOB (B.E.) ----------- */
+/* ------------ flatpickr config (Thai + พ.ศ.) ------------ */
 flatpickr("#dob", {
   locale: "th",
   altInput: true,
   altFormat: "d F Y",
   dateFormat: "Y-m-d",
-  onChange: function(d,_,inst){
-    if(d.length){
-      inst.altInput.value =
-        `${d[0].getDate()} ${inst.l10n.months.longhand[d[0].getMonth()]} ${d[0].getFullYear()+543}`;
+  onReady: function(selectedDates, dateStr, instance) {
+    if (selectedDates.length > 0) {
+      const d = selectedDates[0];
+      instance.altInput.value =
+        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
+    }
+  },
+  onChange: function(selectedDates, dateStr, instance) {
+    if (selectedDates.length > 0) {
+      const d = selectedDates[0];
+      instance.altInput.value =
+        `${d.getDate()} ${instance.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
     }
   }
 });
 
-/* ----------- Load Address JSON ----------- */
-let addressData = {};
-
-fetch("data/thai-address.json")
-  .then(r=>r.json())
-  .then(json=>{
-    addressData=json;
-    loadProvinces();
-  });
-
-function loadProvinces(){
-  const el=province;
-  el.innerHTML='<option value="">-- เลือกจังหวัด --</option>';
-  Object.keys(addressData).forEach(p=>{
-    el.innerHTML+=`<option>${p}</option>`;
-  });
+/* ------------ วันที่ไทย (พ.ศ.) ------------ */
+function formatThaiDate(date = new Date()) {
+  const thMonths = [
+    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+  ];
+  const d = date.getDate();
+  const m = thMonths[date.getMonth()];
+  const y = date.getFullYear() + 543;
+  return `${d} ${m} ${y}`;
 }
 
+// เติมวันที่ลงหน้าเว็บ
+document.getElementById("thaiDate").innerText = `ประจำวันที่ ${formatThaiDate()}`;
+
+
+/* ------------ จังหวัดตัวอย่าง (ภาคใต้จากของเดิม) ------------ */
+const data = {
+  "ชุมพร": { "เมืองชุมพร":[{sub:"บางหมาก",zip:"86000"},{sub:"ท่าแซะ",zip:"86120"}], "สวี":[{sub:"นาโพธิ์",zip:"86130"},{sub:"ครน",zip:"86130"},{sub:"ทุ่งระยะ",zip:"86130"},{sub:"ท่าหิน",zip:"86130"},{sub:"ด่านสวี",zip:"86130"}] },
+  "สงขลา": { "เมืองสงขลา":[{sub:"บ่อยาง",zip:"90000"},{sub:"เขารูปช้าง",zip:"90000"}], "หาดใหญ่":[{sub:"หาดใหญ่ใน",zip:"90110"},{sub:"คอหงส์",zip:"90110"}] },
+  "นครศรีธรรมราช": { "เมืองนครศรีธรรมราช":[{sub:"ปากพูน",zip:"80000"},{sub:"ท่าเรือ",zip:"80000"}], "พรหมคีรี":[{sub:"พรหมโลก",zip:"80220"}] },
+  "ภูเก็ต": { "เมืองภูเก็ต":[{sub:"ตลาดใหญ่",zip:"83000"},{sub:"รัษฎา",zip:"83000"}] },
+  "สุราษฎร์ธานี": { "เมืองสุราษฎร์ธานี":[{sub:"บางใบไม้",zip:"84000"},{sub:"มะขามเตี้ย",zip:"84000"}], "กาญจนดิษฐ์":[{sub:"คลองพา",zip:"84140"}] }
+};
+
+function updateProvinces(){
+  const el = document.getElementById('province');
+  el.innerHTML = '<option value="">-- เลือกจังหวัด --</option>';
+  for(let p in data) el.innerHTML += `<option>${p}</option>`;
+}
+updateProvinces();
 function updateDistricts(){
-  district.innerHTML='<option value="">-- เลือกอำเภอ --</option>';
-  subdistrict.innerHTML='<option value="">-- เลือกตำบล --</option>';
-  zipcode.value="";
-  if(!province.value) return;
-
-  Object.keys(addressData[province.value]).forEach(d=>{
-    district.innerHTML+=`<option>${d}</option>`;
-  });
+  const prov = document.getElementById('province').value;
+  const dEl = document.getElementById('district');
+  dEl.innerHTML = '<option value="">-- เลือกอำเภอ --</option>';
+  document.getElementById('subdistrict').innerHTML = '<option value="">-- เลือกตำบล --</option>';
+  document.getElementById('zipcode').value = '';
+  if(prov) for(let d in data[prov]) dEl.innerHTML += `<option>${d}</option>`;
 }
-
 function updateSubdistricts(){
-  subdistrict.innerHTML='<option value="">-- เลือกตำบล --</option>';
-  zipcode.value="";
-  if(!province.value || !district.value) return;
-
-  addressData[province.value][district.value].forEach(item=>{
-    subdistrict.innerHTML+=`<option data-zip="${item.zip}">${item.name}</option>`;
-  });
+  const prov = document.getElementById('province').value;
+  const dist = document.getElementById('district').value;
+  const subEl = document.getElementById('subdistrict');
+  subEl.innerHTML = '<option value="">-- เลือกตำบล --</option>';
+  document.getElementById('zipcode').value = '';
+  if(dist) data[prov][dist].forEach(s => subEl.innerHTML += `<option value="${s.sub}" data-zip="${s.zip}">${s.sub}</option>`);
 }
-
-subdistrict.addEventListener("change",()=>{
-  zipcode.value=subdistrict.selectedOptions[0]?.dataset.zip || "";
+document.getElementById('subdistrict').addEventListener('change', () => {
+  const sel = document.getElementById('subdistrict').selectedOptions[0];
+  if(sel) document.getElementById('zipcode').value = sel.dataset.zip || '';
 });
 
-/* ----------- Helper: Age ----------- */
+/* ------------ helpers ------------ */
 function calculateAge(dob){
-  if(!dob) return "";
-  const b=new Date(dob), t=new Date();
-  let y=t.getFullYear()-b.getFullYear();
-  let m=t.getMonth()-b.getMonth();
-  let d=t.getDate()-b.getDate();
-  if(d<0){m--; d+=30;}
-  if(m<0){y--; m+=12;}
-  return `${y} ปี ${m} เดือน ${d} วัน`;
+  if(!dob) return '';
+  const b = new Date(dob);
+  const t = new Date();
+  let years = t.getFullYear() - b.getFullYear();
+  let months = t.getMonth() - b.getMonth();
+  let days = t.getDate() - b.getDate();
+  if(days < 0){ months--; days += new Date(t.getFullYear(), t.getMonth(), 0).getDate(); }
+  if(months < 0){ years--; months += 12; }
+  return `${years} ปี ${months} เดือน ${days} วัน`;
 }
 
-/* ----------- LocalStorage Logic ----------- */
-const STORAGE_KEY="ptPatients";
-let patients=[];
-let editingId=null;
+/* ------------ LocalStorage logic ------------ */
+const STORAGE_KEY = 'ptPatients';
+let patients = []; // array of objects
+let editingId = null;
 
 function loadFromLocal(){
-  patients = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    patients = raw ? JSON.parse(raw) : [];
+  }catch(e){
+    patients = [];
+    console.error('failed load', e);
+  }
   renderTable();
 }
+
 function saveToLocal(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-  totalCount.innerText=patients.length;
+  document.getElementById('totalCount').innerText = patients.length;
 }
 
-/* ----------- Render Table ----------- */
-function renderTable(q=""){
-  let tbody=patientTbody;
-  tbody.innerHTML="";
-  const list=patients.slice().reverse();
-  q=q.toLowerCase();
-  let idx=0;
-
-  list.forEach(p=>{
-    if(q && !`${p.hn} ${p.fullname} ${p.phone}`.toLowerCase().includes(q)) return;
+/* ------------ render table (with search) ------------ */
+function renderTable(filter=''){
+  const tbody = document.getElementById('patientTbody');
+  tbody.innerHTML = '';
+  const list = patients.slice().reverse(); // latest first
+  const q = filter.trim().toLowerCase();
+  let idx = 0;
+  for(let p of list){
+    const searchable = `${p.hn} ${p.fullname} ${p.phone} ${p.diagnosis}`.toLowerCase();
+    if(q && !searchable.includes(q)) continue;
     idx++;
-    const addr=`${p.house_no} ม.${p.moo} ${p.subdistrict} ${p.district} ${p.province}`;
-    tbody.innerHTML+=`
+    const age = calculateAge(p.dob);
+    const addr = `${p.house_no ? p.house_no + ' ' : ''}${p.moo ? 'หมู่ ' + p.moo + ' ' : ''}${p.subdistrict ? p.subdistrict + ' ' : ''}${p.district ? p.district + ' ' : ''}${p.province ? p.province : ''}`.trim();
+    tbody.insertAdjacentHTML('beforeend', `
       <tr>
         <td>${idx}</td>
-        <td>${p.hn}</td>
-        <td>${p.fullname}</td>
-        <td>${calculateAge(p.dob)}</td>
-        <td>${p.gender}</td>
-        <td>${addr}</td>
-        <td>${p.phone}</td>
-        <td>${p.diagnosis}</td>
+        <td class="muted-td">${escapeHtml(p.hn)}</td>
+        <td>${escapeHtml(p.fullname)}</td>
+        <td>${age}</td>
+        <td>${escapeHtml(p.gender)}</td>
+        <td>${escapeHtml(addr)}</td>
+        <td>${escapeHtml(p.phone)}</td>
+        <td>${escapeHtml(p.diagnosis)}</td>
         <td>
-          <button onclick="editPatient('${p.id}')" class="btn">แก้ไข</button>
+          <div style="display:flex;gap:6px">
+            <button class="qr-btn" onclick="openQR('${p.id}')">QR</button>
+            <button class="edit-btn" onclick="startEdit('${p.id}')">แก้ไข</button>
+            <button class="del-btn" onclick="deletePatient('${p.id}')">ลบ</button>
+          </div>
         </td>
-      </tr>`;
-  });
-
-  totalCount.innerText=patients.length;
+      </tr>
+    `);
+  }
+  document.getElementById('totalCount').innerText = patients.length;
 }
 
-searchInput.addEventListener("input",e=>renderTable(e.target.value));
+/* safe html */
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m];});
+}
 
-/* ----------- Add/Edit ----------- */
-function collect(){
+/* ------------ add / edit / delete ------------ */
+function collectForm(){
   return {
-    id: editingId || "p"+Date.now(),
-    hn: hn.value.trim(),
-    cid: cid.value.trim(),
-    an: an.value.trim(),
-    fullname: fullname.value.trim(),
-    gender: gender.value,
-    dob: dob.value,
-    insurance: insurance.value,
-    house_no: house_no.value.trim(),
-    moo: moo.value.trim(),
-    province: province.value,
-    district: district.value,
-    subdistrict: subdistrict.value,
-    zipcode: zipcode.value,
-    phone: phone.value.trim(),
-    pt: pt.value,
-    drug_allergy: drug_allergy.value.trim(),
-    chronic_disease: chronic_disease.value.trim(),
-    diagnosis: diagnosis.value.trim()
+    id: editingId || 'p' + Date.now(),
+    hn: document.getElementById('hn').value.trim(),
+    cid: document.getElementById('cid').value.trim(),
+    an: document.getElementById('an').value.trim(),
+    fullname: document.getElementById('fullname').value.trim(),
+    gender: document.getElementById('gender').value,
+    dob: document.getElementById('dob').value,
+    insurance: document.getElementById('insurance').value,
+    house_no: document.getElementById('house_no').value.trim(),
+    moo: document.getElementById('moo').value.trim(),
+    province: document.getElementById('province').value,
+    district: document.getElementById('district').value,
+    subdistrict: document.getElementById('subdistrict').value,
+    zipcode: document.getElementById('zipcode').value,
+    phone: document.getElementById('phone').value.trim(),
+    pt: document.getElementById('pt').value,
+    drug_allergy: document.getElementById('drug_allergy').value.trim(),
+    chronic_disease: document.getElementById('chronic_disease').value.trim(),
+    diagnosis: document.getElementById('diagnosis').value.trim()
   };
 }
 
-saveBtn.addEventListener("click",()=>{
-  const p=collect();
+function validateForm(p){
   if(!p.hn || !p.fullname || !p.dob || !p.diagnosis){
-    return alert("กรุณากรอก HN, ชื่อ, วันเกิด และ วินิจฉัย");
+    alert('กรุณากรอก HN, ชื่อ, วันเกิด และ การวินิจฉัย');
+    return false;
   }
+  return true;
+}
 
-  if(editingId){
-    patients = patients.map(x=>x.id===editingId?p:x);
-    editingId=null;
-    cancelEditBtn.style.display="none";
-    saveBtn.innerText="➕ เพิ่มผู้ป่วย";
+const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbyPNL_fe4Wl9La5HglCibH7rqs0KH9LQIQUJq92a9vpQZ_vms6kVTxQl-SDASgeLTmp/exec";
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const p = collectForm();
+  if (!validateForm(p)) return;
+
+  // สร้าง timestamp
+  p.created_at = new Date().toISOString();
+
+  /* -----------------------------
+      1) บันทึกลง LocalStorage
+  ------------------------------*/
+  if (editingId) {
+    patients = patients.map(x => x.id === editingId ? p : x);
+    editingId = null;
+    document.getElementById('saveBtn').innerText = '➕ เพิ่มผู้ป่วย';
+    document.getElementById('cancelEditBtn').style.display = 'none';
   } else {
     patients.push(p);
   }
 
   saveToLocal();
   renderTable();
-  patientForm.reset();
+  clearForm();
+
+
+  /* -----------------------------
+      2) ส่งข้อมูลไป Google Sheet
+  ------------------------------*/
+  fetch(GOOGLE_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(p)
+  })
+  .then(async res => {
+      const text = await res.text();
+      try {
+          const json = JSON.parse(text);
+          console.log("✔ ส่งข้อมูลไป Google Sheet สำเร็จ:", json);
+      } catch (err) {
+          console.error("❌ ไม่ใช่ JSON:", text);
+          alert("Google Script ตอบกลับไม่ถูกต้อง:\n" + text);
+      }
+  })
+  .then(result => {
+    console.log("✔ ส่งข้อมูลไป Google Sheets สำเร็จ:", result);
+  })
+  .catch(err => {
+    console.error("❌ ส่งข้อมูลล้มเหลว:", err);
+    alert("⚠ ไม่สามารถส่งข้อมูลไป Google Sheet ได้");
+  });
 });
 
-/* ----------- Edit ----------- */
-function editPatient(id){
-  const p=patients.find(x=>x.id===id);
+function startEdit(id){
+  const p = patients.find(x => x.id === id);
   if(!p) return;
-  editingId=id;
-
-  Object.keys(p).forEach(k=>{
-    if(document.getElementById(k)) document.getElementById(k).value=p[k];
-  });
-
+  editingId = id;
+  // fill form
+  document.getElementById('hn').value = p.hn;
+  document.getElementById('cid').value = p.cid;
+  document.getElementById('an').value = p.an;
+  document.getElementById('fullname').value = p.fullname;
+  document.getElementById('gender').value = p.gender || 'ชาย';
+  document.getElementById('dob').value = p.dob;
+  // update flatpickr altInput if exists
+  const fp = document.querySelector("#dob");
+  if (fp && p.dob && fp._flatpickr) {
+    fp._flatpickr.setDate(p.dob, true);
+    const d = new Date(p.dob);
+    fp._flatpickr.altInput.value =
+      `${d.getDate()} ${fp._flatpickr.l10n.months.longhand[d.getMonth()]} ${d.getFullYear() + 543}`;
+  }
+  document.getElementById('insurance').value = p.insurance || '';
+  document.getElementById('house_no').value = p.house_no || '';
+  document.getElementById('moo').value = p.moo || '';
+  document.getElementById('province').value = p.province || '';
   updateDistricts();
-  district.value=p.district;
+  document.getElementById('district').value = p.district || '';
   updateSubdistricts();
-  subdistrict.value=p.subdistrict;
+  document.getElementById('subdistrict').value = p.subdistrict || '';
+  document.getElementById('zipcode').value = p.zipcode || '';
+  document.getElementById('phone').value = p.phone || '';
+  document.getElementById('pt').value = p.pt || '';
+  document.getElementById('drug_allergy').value = p.drug_allergy || '';
+  document.getElementById('chronic_disease').value = p.chronic_disease || '';
+  document.getElementById('diagnosis').value = p.diagnosis || '';
 
-  saveBtn.innerText="💾 บันทึกการแก้ไข";
-  cancelEditBtn.style.display="inline-block";
-  window.scrollTo({top:0,behavior:"smooth"});
+  document.getElementById('saveBtn').innerText = '💾 บันทึกการแก้ไข';
+  document.getElementById('cancelEditBtn').style.display = 'inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-cancelEditBtn.addEventListener("click",()=>{
-  editingId=null;
-  patientForm.reset();
-  saveBtn.innerText="➕ เพิ่มผู้ป่วย";
-  cancelEditBtn.style.display="none";
+document.getElementById('cancelEditBtn').addEventListener('click', () => {
+  editingId = null;
+  clearForm();
+  document.getElementById('saveBtn').innerText = '➕ เพิ่มผู้ป่วย';
+  document.getElementById('cancelEditBtn').style.display = 'none';
 });
 
-/* ----------- Clear All ----------- */
-clearAllBtn.addEventListener("click",()=>{
-  if(confirm("ลบข้อมูลทั้งหมด?")){
-    patients=[];
-    saveToLocal();
-    renderTable();
-  }
+function deletePatient(id){
+  if(!confirm('ต้องการลบข้อมูลผู้ป่วยนี้หรือไม่?')) return;
+  patients = patients.filter(x => x.id !== id);
+  saveToLocal();
+  renderTable();
+}
+
+/* ------------ clear form ------------ */
+function clearForm(){
+  ['hn','cid','an','fullname','gender','dob','insurance','house_no','moo','province','district','subdistrict','zipcode','phone','pt','drug_allergy','chronic_disease','diagnosis'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(el.tagName.toLowerCase()==='select') el.selectedIndex=0;
+    else el.value = '';
+  });
+  // reset flatpickr alt
+  const fp = document.querySelector("#dob");
+  if(fp && fp._flatpickr) fp._flatpickr.clear();
+}
+
+/* ------------ QR logic ------------ */
+const assessmentBaseUrl = "https://jiratchaya1a.github.io/pt-progress-tracker/docs/assessment_form.html";
+function openQR(patientId){
+  const p = patients.find(x => x.id === patientId);
+  if(!p) return;
+  const link = `${assessmentBaseUrl}?hn=${encodeURIComponent(p.hn)}&name=${encodeURIComponent(p.fullname)}`;
+  document.getElementById('qrcode').innerHTML = '';
+  document.getElementById('qrPatientName').innerText = `${p.fullname} (${p.hn})`;
+  new QRCode(document.getElementById('qrcode'), { text: link, width:220, height:220 });
+  document.getElementById('qrOpenLink').href = link;
+  document.getElementById('qrModal').style.display = 'flex';
+}
+document.getElementById('qrClose').addEventListener('click', ()=> document.getElementById('qrModal').style.display='none');
+document.getElementById('qrModal').addEventListener('click', (e)=> { if(e.target.id==='qrModal') document.getElementById('qrModal').style.display='none'; });
+
+/* ------------ export / import / clear all ------------ */
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const data = JSON.stringify(patients, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'ptPatients.json'; a.click();
+  URL.revokeObjectURL(url);
 });
 
-/* ----------- Init ----------- */
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  const input = document.createElement('input'); input.type='file'; input.accept='.json,application/json';
+  input.onchange = (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const obj = JSON.parse(reader.result);
+        if(Array.isArray(obj)){
+          patients = obj;
+          saveToLocal();
+          renderTable();
+          alert('นำเข้าเรียบร้อย');
+        }else alert('ไฟล์ไม่ถูกต้อง: ต้องเป็น JSON array');
+      }catch(err){ alert('อ่านไฟล์ไม่สำเร็จ'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+});
+
+document.getElementById('clearAllBtn').addEventListener('click', ()=>{
+  if(!confirm('ต้องการลบข้อมูลผู้ป่วยทั้งหมดจากเครื่องหรือไม่?')) return;
+  patients = [];
+  saveToLocal();
+  renderTable();
+});
+
+/* search */
+document.getElementById('searchInput').addEventListener('input', (e)=> renderTable(e.target.value));
+
+/* ------------ init ------------ */
 loadFromLocal();
-</script>
 
+/* optionally show example if empty */
+// if(patients.length===0){ /* could seed sample */ }
+
+/* ensure total count */
+document.getElementById('totalCount').innerText = patients.length;
+
+/* ------------ helper: on load focus ------------- */
+window.addEventListener('load', ()=> {
+  // If GitHub Pages online and you want the QR to link to hosted assessment page,
+  // change assessmentBaseUrl to full url: "https://jiratchaya1a.github.io/pt-progress-tracker/assessment_form.html"
+});
+
+/* End script */
+</script>
 </body>
 </html>
