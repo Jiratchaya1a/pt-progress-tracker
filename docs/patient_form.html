@@ -10,8 +10,6 @@
 
 <!-- Flatpickr Thai -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
 
 <!-- QR Code -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -437,58 +435,6 @@
     }
   });
 
-/* ------------ flatpickr config (Thai + พ.ศ.) ------------ */
-flatpickr("#dob", {
-  locale: "th",
-  altInput: true,
-  altFormat: "d F Y",
-  dateFormat: "Y-m-d",
-
-  onReady(selectedDates, dateStr, instance) {
-    fixThaiYear(instance);
-    if (selectedDates.length > 0) updateThaiDisplay(instance, selectedDates[0]);
-  },
-
-  onOpen(selectedDates, dateStr, instance) {
-    fixThaiYear(instance);
-  },
-
-  onMonthChange(selectedDates, dateStr, instance) {
-    fixThaiYear(instance);
-  },
-
-  onYearChange(selectedDates, dateStr, instance) {
-    fixThaiYear(instance);
-  },
-
-  onChange(selectedDates, dateStr, instance) {
-    if (selectedDates.length > 0) updateThaiDisplay(instance, selectedDates[0]);
-  }
-});
-
-// ป้องกันปีถูกบวกซ้ำ
-function fixThaiYear(instance) {
-  const yearInput = instance.calendarContainer.querySelector(".cur-year");
-
-  if (!yearInput) return;
-
-  let y = parseInt(yearInput.value);
-
-  // ถ้าเป็นปี ค.ศ. (< 2500) → แปลงเป็น พ.ศ.
-  if (y < 2500) {
-    yearInput.value = y + 543;
-  }
-
-  // ถ้าเป็น พ.ศ. แล้ว → ไม่ต้องบวกซ้ำ
-}
-
-function updateThaiDisplay(instance, date) {
-  const thaiYear = date.getFullYear() + 543;
-  const d = date.getDate();
-  const m = instance.l10n.months.longhand[date.getMonth()];
-  instance.altInput.value = `${d} ${m} ${thaiYear}`;
-}
-
 
 /* ------------ วันที่ไทย (พ.ศ.) ------------ */
 function formatThaiDate(date = new Date()) {
@@ -500,18 +446,6 @@ function formatThaiDate(date = new Date()) {
   const m = thMonths[date.getMonth()];
   const y = date.getFullYear() + 543;
   return `${d} ${m} ${y}`;
-}
-
-/* ------------ วันที่ไทย (พ.ศ.) ------------ */
-function formatThaiDate(date = new Date()) {
-  const thMonths = [
-    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
-  ];
-  const d = date.getDate();
-  const m = thMonths[date.getMonth()];
-  const y = date.getFullYear() + 543;
-  return ` ${d} ${m} ${y}`;
 }
 
 // แสดงวันที่ท้ายหัวข้อ
