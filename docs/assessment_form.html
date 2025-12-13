@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>แบบประเมินผู้ป่วยกายภาพบำบัด</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -79,6 +81,42 @@ button {
 button:hover {
     background-color: #e68a00;
 }
+.assessment-card {
+    margin: 0 4px;
+}
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+
+    body {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 22px;
+        margin-bottom: 24px;
+    }
+
+    /* ให้ grid เรียงลงมา 1 คอลัมน์ */
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .assessment-card {
+        padding: 18px;
+    }
+
+    .face {
+        font-size: 44px;
+    }
+
+    button {
+        width: 100%;
+        font-size: 18px;
+        padding: 14px;
+    }
+}
+
 </style>
 </head>
 <body>  
