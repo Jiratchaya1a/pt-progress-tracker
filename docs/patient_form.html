@@ -405,18 +405,21 @@ function updateCalendar() {
       const d = dayEl.dataset.day;
       const yearCE = yearBE - 543;
 
+      // ค่า ค.ศ. สำหรับเก็บจริง
       const finalDate = `${yearCE}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
-      dob: document.getElementById('dob').dataset.value || '',
+      // 👉 แสดงผลเป็น พ.ศ.
+      dobInput.value = formatThaiDOB(finalDate);
 
-      dobInput.dataset.thai =
-        `${d} ${monthThai(month)} ${yearBE}`;
+      // 👉 เก็บค่าจริงไว้คำนวณอายุ / save
+      dobInput.dataset.value = finalDate;
 
       dobInput.style.color = "black";
       picker.style.display = "none";
     });
   });
 }
+
 
 // Thai short months
 function monthThai(m) {
