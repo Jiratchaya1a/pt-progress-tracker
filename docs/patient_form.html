@@ -543,6 +543,33 @@ function saveToLocal(){
   document.getElementById('totalCount').innerText = patients.length;
 }
 
+function loadFromGoogleSheet() {
+  fetch(GOOGLE_API_URL)
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data)) {
+        console.error("รูปแบบข้อมูลจาก Google Sheet ไม่ถูกต้อง", data);
+        return;
+      }
+
+      patients = data;
+
+      // แปลง key ให้ตรง (กันกรณี Sheet เก็บเป็น Date object)
+      patients = patients.map(p => ({
+        ...p,
+        dob: p.dob ? new Date(p.dob).toISOString().slice(0,10) : ''
+      }));
+
+      renderTable();
+      document.getElementById('totalCount').innerText = patients.length;
+    })
+    .catch(err => {
+      console.error("❌ โหลดข้อมูลจาก Google Sheet ไม่สำเร็จ", err);
+      alert("ไม่สามารถโหลดข้อมูลจาก Google Sheet ได้");
+    });
+}
+
+
 /* ------------ render table (with search) ------------ */
 function renderTable(filter=''){
   const tbody = document.getElementById('patientTbody');
@@ -623,7 +650,7 @@ function validateForm(p){
   return true;
 }
 
-const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbx_4Rm_Yl7XajVQM7RgrgNOREw_nCepfa4ggCKnIwztOh0zH4qc_YCHGye6xFbKYnv0kQ/exec";
+const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbzZFyUdRy67v6-PLyhA5svPhpC249YFKj8QfOgowaqE-R--cg6m7deLCbFps9cLkgoSxw/exec";
 
 document.getElementById('saveBtn').addEventListener('click', () => {
   const p = collectForm();
@@ -803,7 +830,7 @@ document.getElementById('clearAllBtn').addEventListener('click', ()=>{
 document.getElementById('searchInput').addEventListener('input', (e)=> renderTable(e.target.value));
 
 /* ------------ init ------------ */
-loadFromLocal();
+loadFromGoogleSheet();
 
 /* optionally show example if empty */
 // if(patients.length===0){ /* could seed sample */ }
