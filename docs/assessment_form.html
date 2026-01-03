@@ -120,8 +120,9 @@ button:hover {
 </style>
 </head>
 <body>  
+    
+<h1 id="pageTitle">แบบประเมินผู้ป่วยกายภาพบำบัด</h1>
 
-<h1>แบบประเมินผู้ป่วยกายภาพบำบัด ของนายวิทยา Model.</h1>
 
 <!-- =======================
      ข้อ 1+2 (Grid)
@@ -239,6 +240,18 @@ function sendData(){
         if(data.status==="success"){ alert("ส่งข้อมูลเรียบร้อย!"); } 
         else{ alert("เกิดข้อผิดพลาด"); }
     }).catch(err=>alert("เกิดข้อผิดพลาด: "+err));
+}
+
+function getQueryParam(key){
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+}
+
+const patientName = getQueryParam("name");
+
+if(patientName){
+    document.getElementById("pageTitle").innerText =
+        `แบบประเมินผู้ป่วยกายภาพบำบัด ของนาย${patientName}`;
 }
 </script>
 
