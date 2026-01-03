@@ -127,6 +127,44 @@
     color: #ccc;
     pointer-events: none;
   }
+
+  /* ===== Success Popup ===== */
+#successPopup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.success-box {
+  background: white;
+  border-radius: 16px;
+  padding: 30px 36px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  animation: popIn 0.25s ease-out;
+}
+
+.checkmark {
+  font-size: 64px;
+  color: #22c55e; /* เขียว */
+  margin-bottom: 12px;
+}
+
+.success-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
   
 /* =========================
    📱 Mobile Responsive
@@ -231,6 +269,7 @@
 }
 </style>
 </head>
+
 <body>
 <div class="container">
   <div class="top-row">
@@ -957,7 +996,25 @@ window.addEventListener('load', ()=> {
   // change assessmentBaseUrl to full url: "https://jiratchaya1a.github.io/pt-progress-tracker/assessment_form.html"
 });
 
+function showSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  popup.style.display = 'flex';
+
+  setTimeout(() => {
+    popup.style.display = 'none';
+  }, 1500); // แสดง 1.5 วินาที
+}
+
 /* End script */
 </script>
+  
+<!-- Success Popup -->
+<div id="successPopup" style="display:none;">
+  <div class="success-box">
+    <div class="checkmark">✔</div>
+    <div class="success-text">บันทึกเรียบร้อย</div>
+  </div>
+</div>
+  
 </body>
 </html>
