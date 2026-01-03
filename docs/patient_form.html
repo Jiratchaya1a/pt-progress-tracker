@@ -334,7 +334,8 @@
         </div>
       
         <div>
-          <label>ตำบล</label><select id="subdistrict"></select>
+        <label>ตำบล</label>
+        <select id="subdistrict" onchange="updateZipcode()"></select>
         </div>
       
         <!-- รหัสไปรษณีย์ — ปรับสไตล์ให้เหมือนกล่อง input อื่น -->
@@ -629,6 +630,20 @@ function updateSubdistricts() {
         </option>`;
     });
 }
+
+function updateZipcode() {
+  const subEl = document.getElementById('subdistrict');
+  const zipInput = document.getElementById('zipcode');
+
+  const selected = subEl.selectedOptions[0];
+  if (!selected) {
+    zipInput.value = '';
+    return;
+  }
+
+  zipInput.value = selected.dataset.zip || '';
+}
+
 
 
 
