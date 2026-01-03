@@ -479,7 +479,7 @@ let amphoes = [];
 let districts = [];
 
 Promise.all([
-  fetch('provinces.json').then(r => r.json()),
+  fetch('province.json').then(r => r.json()),
   fetch('amphoes.json').then(r => r.json()),
   fetch('districts.json').then(r => r.json())
 ]).then(([p, a, d]) => {
