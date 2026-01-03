@@ -127,6 +127,108 @@
     color: #ccc;
     pointer-events: none;
   }
+  
+/* =========================
+   📱 Mobile Responsive
+   ========================= */
+@media (max-width: 768px) {
+
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  /* header buttons */
+  .top-row {
+    gap: 10px;
+  }
+
+  .top-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* card spacing */
+  .card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  /* form: 1 column on phone */
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  input[type="text"],
+  select {
+    font-size: 15px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  /* buttons */
+  .btn {
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+
+  .actions,
+  .flex-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  /* table wrapper */
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px;
+    white-space: nowrap;
+  }
+
+  /* hide less important columns on mobile */
+  table th:nth-child(4),
+  table td:nth-child(4),  /* อายุ */
+  table th:nth-child(9),
+  table td:nth-child(9) { /* แพทย์ */
+    display: none;
+  }
+
+  /* QR modal */
+  #qrBox {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  #qrcode {
+    transform: scale(0.9);
+  }
+
+  /* footer note */
+  .footer-note {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
 </style>
 </head>
 <body>
