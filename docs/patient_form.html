@@ -472,42 +472,68 @@ document.getElementById("thaiDate").innerText = formatThaiDate();
 // เติมวันที่ลงหน้าเว็บ
 document.getElementById("thaiDate").innerText = `ประจำวันที่ ${formatThaiDate()}`;
 
+/* ------------ จังหวัด/อำเภอ/ตำบล (ครบทั้งประเทศ) ------------ */
 
-/* ------------ จังหวัดตัวอย่าง (ภาคใต้จากของเดิม) ------------ */
-const data = {
-  "ชุมพร": { "เมืองชุมพร":[{sub:"บางหมาก",zip:"86000"},{sub:"ท่าแซะ",zip:"86120"}], "สวี":[{sub:"นาโพธิ์",zip:"86130"},{sub:"ครน",zip:"86130"},{sub:"ทุ่งระยะ",zip:"86130"},{sub:"ท่าหิน",zip:"86130"},{sub:"ด่านสวี",zip:"86130"}] },
-  "สงขลา": { "เมืองสงขลา":[{sub:"บ่อยาง",zip:"90000"},{sub:"เขารูปช้าง",zip:"90000"}], "หาดใหญ่":[{sub:"หาดใหญ่ใน",zip:"90110"},{sub:"คอหงส์",zip:"90110"}] },
-  "นครศรีธรรมราช": { "เมืองนครศรีธรรมราช":[{sub:"ปากพูน",zip:"80000"},{sub:"ท่าเรือ",zip:"80000"}], "พรหมคีรี":[{sub:"พรหมโลก",zip:"80220"}] },
-  "ภูเก็ต": { "เมืองภูเก็ต":[{sub:"ตลาดใหญ่",zip:"83000"},{sub:"รัษฎา",zip:"83000"}] },
-  "สุราษฎร์ธานี": { "เมืองสุราษฎร์ธานี":[{sub:"บางใบไม้",zip:"84000"},{sub:"มะขามเตี้ย",zip:"84000"}], "กาญจนดิษฐ์":[{sub:"คลองพา",zip:"84140"}] }
-};
+let provinces = [];
+let amphoes = [];
+let districts = [];
 
-function updateProvinces(){
+Promise.all([
+  fetch('provinces.json').then(r => r.json()),
+  fetch('amphoes.json').then(r => r.json()),
+  fetch('districts.json').then(r => r.json())
+]).then(([p, a, d]) => {
+  provinces = p;
+  amphoes = a;
+  districts = d;
+  renderProvinces();
+});
+
+function renderProvinces(){
   const el = document.getElementById('province');
   el.innerHTML = '<option value="">-- เลือกจังหวัด --</option>';
-  for(let p in data) el.innerHTML += `<option>${p}</option>`;
+  provinces.forEach(p=>{
+    el.innerHTML += `<option value="${p.id}">${p.name_th}</option>`;
+  });
 }
-updateProvinces();
+
 function updateDistricts(){
-  const prov = document.getElementById('province').value;
+  const provId = document.getElementById('province').value;
   const dEl = document.getElementById('district');
   dEl.innerHTML = '<option value="">-- เลือกอำเภอ --</option>';
+
   document.getElementById('subdistrict').innerHTML = '<option value="">-- เลือกตำบล --</option>';
   document.getElementById('zipcode').value = '';
-  if(prov) for(let d in data[prov]) dEl.innerHTML += `<option>${d}</option>`;
+
+  amphoes
+    .filter(a => a.province_id == provId)
+    .forEach(a=>{
+      dEl.innerHTML += `<option value="${a.id}">${a.name_th}</option>`;
+    });
 }
+
 function updateSubdistricts(){
-  const prov = document.getElementById('province').value;
-  const dist = document.getElementById('district').value;
+  const amphoeId = document.getElementById('district').value;
   const subEl = document.getElementById('subdistrict');
   subEl.innerHTML = '<option value="">-- เลือกตำบล --</option>';
   document.getElementById('zipcode').value = '';
-  if(dist) data[prov][dist].forEach(s => subEl.innerHTML += `<option value="${s.sub}" data-zip="${s.zip}">${s.sub}</option>`);
+
+  districts
+    .filter(d => d.amphoe_id == amphoeId)
+    .forEach(d=>{
+      subEl.innerHTML += `
+        <option value="${d.name_th}" data-zip="${d.zip_code}">
+          ${d.name_th}
+        </option>`;
+    });
 }
+
 document.getElementById('subdistrict').addEventListener('change', () => {
   const sel = document.getElementById('subdistrict').selectedOptions[0];
-  if(sel) document.getElementById('zipcode').value = sel.dataset.zip || '';
+  document.getElementById('zipcode').value = sel?.dataset.zip || '';
 });
+
+
 
 /* ------------ helpers ------------ */
 function calculateAge(dob){
@@ -616,31 +642,41 @@ function escapeHtml(s){
 
 /* ------------ add / edit / delete ------------ */
 function collectForm(){
+  const provEl = document.getElementById('province');
+  const distEl = document.getElementById('district');
+  const subEl  = document.getElementById('subdistrict');
+
   return {
     id: editingId || 'p' + Date.now(),
-    hn: document.getElementById('hn').value.trim(),
-    cid: document.getElementById('cid').value.trim(),
-    an: document.getElementById('an').value.trim(),
-    fullname: document.getElementById('fullname').value.trim(),
-    gender: document.getElementById('gender').value,
+    hn: hn.value.trim(),
+    cid: cid.value.trim(),
+    an: an.value.trim(),
+    fullname: fullname.value.trim(),
+    gender: gender.value,
+    dob: dob.dataset.value || '',
+    insurance: insurance.value,
 
-    // ✅ สำคัญมาก
-    dob: document.getElementById('dob').dataset.value || '',
+    house_no: house_no.value.trim(),
+    moo: moo.value.trim(),
 
-    insurance: document.getElementById('insurance').value,
-    house_no: document.getElementById('house_no').value.trim(),
-    moo: document.getElementById('moo').value.trim(),
-    province: document.getElementById('province').value,
-    district: document.getElementById('district').value,
-    subdistrict: document.getElementById('subdistrict').value,
-    zipcode: document.getElementById('zipcode').value,
-    phone: document.getElementById('phone').value.trim(),
-    pt: document.getElementById('pt').value,
-    drug_allergy: document.getElementById('drug_allergy').value.trim(),
-    chronic_disease: document.getElementById('chronic_disease').value.trim(),
-    diagnosis: document.getElementById('diagnosis').value.trim()
+    // ✅ เก็บทั้ง id + name
+    province_id: provEl.value,
+    province: provEl.selectedOptions[0]?.text || '',
+
+    district_id: distEl.value,
+    district: distEl.selectedOptions[0]?.text || '',
+
+    subdistrict: subEl.value,
+    zipcode: zipcode.value,
+
+    phone: phone.value.trim(),
+    pt: pt.value,
+    drug_allergy: drug_allergy.value.trim(),
+    chronic_disease: chronic_disease.value.trim(),
+    diagnosis: diagnosis.value.trim()
   };
 }
+
 
 function validateForm(p){
   if(!p.hn || !p.fullname || !p.dob || !p.diagnosis){
@@ -728,11 +764,13 @@ function startEdit(id){
   document.getElementById('insurance').value = p.insurance || '';
   document.getElementById('house_no').value = p.house_no || '';
   document.getElementById('moo').value = p.moo || '';
-  document.getElementById('province').value = p.province || '';
+  document.getElementById('province').value = p.province_id;
   updateDistricts();
-  document.getElementById('district').value = p.district || '';
+  
+  document.getElementById('district').value = p.district_id;
   updateSubdistricts();
-  document.getElementById('subdistrict').value = p.subdistrict || '';
+  
+  document.getElementById('subdistrict').value = p.subdistrict;
   document.getElementById('zipcode').value = p.zipcode || '';
   document.getElementById('phone').value = p.phone || '';
   document.getElementById('pt').value = p.pt || '';
