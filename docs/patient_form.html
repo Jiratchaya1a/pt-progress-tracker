@@ -80,7 +80,12 @@
   /* Modal */
   #qrModal{display:none;position:fixed;inset:0;background:rgba(10,15,25,0.55);justify-content:center;align-items:center;padding:20px;z-index:9999}
   #qrBox{background:var(--card);padding:20px;border-radius:12px;width:320px;max-width:95%;text-align:center}
-  #qrcode{margin:8px auto}
+  #qrcode{
+    margin: 16px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   /* responsive */
   @media (max-width:720px){
     .top-row{flex-direction:column;align-items:stretch}
