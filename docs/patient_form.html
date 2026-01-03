@@ -868,6 +868,7 @@ document.getElementById('clearAllBtn').addEventListener('click', ()=>{
 document.getElementById('searchInput').addEventListener('input', (e)=> renderTable(e.target.value));
 
 /* ------------ init ------------ */
+loadFromLocal();
 loadFromGoogleSheet();
 
 /* optionally show example if empty */
