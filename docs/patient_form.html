@@ -480,14 +480,17 @@ let districts = [];
 
 Promise.all([
   fetch('province.json').then(r => r.json()),
-  fetch('amphoes.json').then(r => r.json()),
-  fetch('districts.json').then(r => r.json())
+  fetch('amphure.json').then(r => r.json()),
+  fetch('district.json').then(r => r.json())
 ]).then(([p, a, d]) => {
   provinces = p;
   amphoes = a;
   districts = d;
   renderProvinces();
+}).catch(err => {
+  console.error('โหลดข้อมูลที่อยู่ไม่สำเร็จ', err);
 });
+
 
 function renderProvinces(){
   const el = document.getElementById('province');
