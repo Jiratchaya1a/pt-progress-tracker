@@ -475,21 +475,22 @@ document.getElementById("thaiDate").innerText = `ประจำวันที�
 /* ------------ จังหวัด/อำเภอ/ตำบล (ครบทั้งประเทศ) ------------ */
 
 let provinces = [];
-let amphoes = [];
-let districts = [];
+let districts = [];      // อำเภอ
+let subDistricts = [];   // ตำบล
 
 Promise.all([
   fetch('province.json').then(r => r.json()),
-  fetch('amphure.json').then(r => r.json()),
-  fetch('district.json').then(r => r.json())
-]).then(([p, a, d]) => {
+  fetch('district.json').then(r => r.json()),        // อำเภอ
+  fetch('sub_district.json').then(r => r.json())     // ตำบล
+]).then(([p, d, sd]) => {
   provinces = p;
-  amphoes = a;
   districts = d;
+  subDistricts = sd;
   renderProvinces();
 }).catch(err => {
-  console.error('โหลดข้อมูลที่อยู่ไม่สำเร็จ', err);
+  console.error('❌ โหลดไฟล์ที่อยู่ไม่สำเร็จ', err);
 });
+
 
 
 function renderProvinces(){
@@ -500,41 +501,37 @@ function renderProvinces(){
   });
 }
 
-function updateDistricts(){
+function updateDistricts() {
   const provId = document.getElementById('province').value;
   const dEl = document.getElementById('district');
+
   dEl.innerHTML = '<option value="">-- เลือกอำเภอ --</option>';
+  document.getElementById('subdistrict').innerHTML =
+    '<option value="">-- เลือกตำบล --</option>';
 
-  document.getElementById('subdistrict').innerHTML = '<option value="">-- เลือกตำบล --</option>';
-  document.getElementById('zipcode').value = '';
-
-  amphoes
-    .filter(a => a.province_id == provId)
-    .forEach(a=>{
-      dEl.innerHTML += `<option value="${a.id}">${a.name_th}</option>`;
+  districts
+    .filter(d => d.province_id == provId)
+    .forEach(d => {
+      dEl.innerHTML += `<option value="${d.id}">${d.name_th}</option>`;
     });
 }
 
-function updateSubdistricts(){
-  const amphoeId = document.getElementById('district').value;
+function updateSubdistricts() {
+  const distId = document.getElementById('district').value;
   const subEl = document.getElementById('subdistrict');
+
   subEl.innerHTML = '<option value="">-- เลือกตำบล --</option>';
   document.getElementById('zipcode').value = '';
 
-  districts
-    .filter(d => d.amphoe_id == amphoeId)
-    .forEach(d=>{
+  subDistricts
+    .filter(sd => sd.district_id == distId)
+    .forEach(sd => {
       subEl.innerHTML += `
-        <option value="${d.name_th}" data-zip="${d.zip_code}">
-          ${d.name_th}
+        <option value="${sd.name_th}" data-zip="${sd.zip_code}">
+          ${sd.name_th}
         </option>`;
     });
 }
-
-document.getElementById('subdistrict').addEventListener('change', () => {
-  const sel = document.getElementById('subdistrict').selectedOptions[0];
-  document.getElementById('zipcode').value = sel?.dataset.zip || '';
-});
 
 
 
