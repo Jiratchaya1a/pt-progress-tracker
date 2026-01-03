@@ -922,44 +922,6 @@ function openQR(patientId){
 document.getElementById('qrClose').addEventListener('click', ()=> document.getElementById('qrModal').style.display='none');
 document.getElementById('qrModal').addEventListener('click', (e)=> { if(e.target.id==='qrModal') document.getElementById('qrModal').style.display='none'; });
 
-/* ------------ export / import / clear all ------------ */
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const data = JSON.stringify(patients, null, 2);
-  const blob = new Blob([data], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'ptPatients.json'; a.click();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById('importBtn').addEventListener('click', ()=>{
-  const input = document.createElement('input'); input.type='file'; input.accept='.json,application/json';
-  input.onchange = (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const obj = JSON.parse(reader.result);
-        if(Array.isArray(obj)){
-          patients = obj;
-          saveToLocal();
-          renderTable();
-          alert('นำเข้าเรียบร้อย');
-        }else alert('ไฟล์ไม่ถูกต้อง: ต้องเป็น JSON array');
-      }catch(err){ alert('อ่านไฟล์ไม่สำเร็จ'); }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-});
-
-document.getElementById('clearAllBtn').addEventListener('click', ()=>{
-  if(!confirm('ต้องการลบข้อมูลผู้ป่วยทั้งหมดจากเครื่องหรือไม่?')) return;
-  patients = [];
-  saveToLocal();
-  renderTable();
-});
 
 /* search */
 document.getElementById('searchInput').addEventListener('input', (e)=> renderTable(e.target.value));
