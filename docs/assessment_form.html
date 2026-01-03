@@ -121,7 +121,11 @@ button:hover {
 </head>
 <body>  
     
-<h1 id="pageTitle">แบบประเมินผู้ป่วยกายภาพบำบัด</h1>
+<h1 id="pageTitle">
+  แบบประเมินผู้ป่วยกายภาพบำบัด
+  <div id="pageDate" style="font-size:16px;margin-top:6px;"></div>
+  <div id="patientName" style="font-size:18px;margin-top:10px;font-weight:normal;"></div>
+</h1>
 
 
 <!-- =======================
@@ -242,16 +246,27 @@ function sendData(){
     }).catch(err=>alert("เกิดข้อผิดพลาด: "+err));
 }
 
-function getQueryParam(key){
-    const params = new URLSearchParams(window.location.search);
-    return params.get(key);
+function formatThaiDate(date = new Date()){
+  const months = [
+    "ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.",
+    "ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."
+  ];
+  const d = date.getDate();
+  const m = months[date.getMonth()];
+  const y = date.getFullYear() + 543;
+  return `${d} ${m} ${y}`;
 }
 
-const patientName = getQueryParam("name");
+const patientNameParam = getQueryParam("name");
 
-if(patientName){
-    document.getElementById("pageTitle").innerText =
-        `แบบประเมินผู้ป่วยกายภาพบำบัด ของ${patientName}`;
+// วันที่เปิดหน้า
+document.getElementById("pageDate").innerText =
+  `วันที่ ${formatThaiDate()}`;
+
+// ชื่อผู้ป่วย (ถ้ามี)
+if(patientNameParam){
+  document.getElementById("patientName").innerText =
+    `ชื่อผู้ป่วย: ${patientNameParam}`;
 }
 </script>
 
