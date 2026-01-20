@@ -727,17 +727,23 @@ function saveToLocal(){
 
 function loadFromGoogleSheet() {
   fetch(GOOGLE_API_URL)
-    .then(res => res.json())
-    .then(data => {
+    .then(res => res.text())
+    .then(text => {
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error("❌ JSON parse ไม่ได้:", text);
+        throw new Error("ไม่ใช่ JSON");
+      }
+
       if (!Array.isArray(data)) {
-        console.error("รูปแบบข้อมูลจาก Google Sheet ไม่ถูกต้อง", data);
+        console.error("❌ รูปแบบข้อมูลจาก Google Sheet ไม่ถูกต้อง", data);
+        alert("Google Sheet ส่งข้อมูลมาไม่ใช่ Array");
         return;
       }
 
-      patients = data;
-
-      // แปลง key ให้ตรง (กันกรณี Sheet เก็บเป็น Date object)
-      patients = patients.map(p => ({
+      patients = data.map(p => ({
         ...p,
         dob: p.dob ? new Date(p.dob).toISOString().slice(0,10) : ''
       }));
