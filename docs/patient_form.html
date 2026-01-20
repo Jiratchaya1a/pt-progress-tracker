@@ -431,6 +431,9 @@
     </div>
 
     <div style="overflow:auto">
+        <div id="loadingMsg" class="small" style="display:none; margin:10px 0; color:#6b7280;">
+          ⏳ กำลังโหลดข้อมูลจาก Google Sheet...
+        </div>
       <table id="patientTable">
         <thead>
           <tr>
@@ -726,6 +729,13 @@ function saveToLocal(){
 }
 
 function loadFromGoogleSheet() {
+  const loadingEl = document.getElementById("loadingMsg");
+  const tableEl = document.getElementById("patientTable");
+
+  // แสดงสถานะโหลด
+  loadingEl.style.display = "block";
+  tableEl.style.opacity = "0.4";
+
   fetch(GOOGLE_API_URL)
     .then(res => res.text())
     .then(text => {
@@ -754,6 +764,11 @@ function loadFromGoogleSheet() {
     .catch(err => {
       console.error("❌ โหลดข้อมูลจาก Google Sheet ไม่สำเร็จ", err);
       alert("ไม่สามารถโหลดข้อมูลจาก Google Sheet ได้");
+    })
+    .finally(() => {
+      // ซ่อนสถานะโหลด
+      loadingEl.style.display = "none";
+      tableEl.style.opacity = "1";
     });
 }
 
@@ -993,9 +1008,8 @@ document.getElementById('qrModal').addEventListener('click', (e)=> { if(e.target
 document.getElementById('searchInput').addEventListener('input', (e)=> renderTable(e.target.value));
 
 /* ------------ init ------------ */
-loadFromLocal();
 loadFromGoogleSheet();
-
+  
 /* optionally show example if empty */
 // if(patients.length===0){ /* could seed sample */ }
 
