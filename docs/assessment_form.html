@@ -124,6 +124,39 @@ button:hover {
 
 </style>
 </head>
+<!-- Success Popup -->
+<div id="successPopup" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+">
+  <div style="
+    background:white;
+    border-radius:16px;
+    padding:30px 36px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    animation:popIn 0.25s ease-out;
+  ">
+    <div style="font-size:64px;color:#22c55e;margin-bottom:12px;">✔</div>
+    <div style="font-size:18px;font-weight:600;color:#111827;">
+      ส่งผลประเมินเรียบร้อย<br>ขอบคุณครับ/ค่ะ
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+</style>
+
 <body>  
     
 <h1 id="pageTitle">
@@ -285,7 +318,7 @@ function sendData(){
     }
 
     if(json.status === "success"){
-      alert("✅ ส่งผลประเมินเรียบร้อย ขอบคุณครับ/ค่ะ");
+      showSuccessPopup();        // 👈 popup สวยๆ
       btn.innerText = "✔ ส่งแล้ว";
     } else {
       alert("❌ เกิดข้อผิดพลาด: " + json.message);
@@ -301,6 +334,14 @@ function sendData(){
   });
 }
 
+function showSuccessPopup() {
+  const popup = document.getElementById("successPopup");
+  popup.style.display = "flex";
+
+  setTimeout(() => {
+    popup.style.display = "none";
+  }, 1800); // แสดง ~1.8 วินาที
+}
 
 
 function getQueryParam(key){
