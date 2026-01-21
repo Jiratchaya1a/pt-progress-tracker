@@ -256,15 +256,17 @@ function sendData(){
   btn.disabled = true;
   btn.innerText = "⏳ กำลังส่งข้อมูล...";
 
-  const payload = {
-    hn: hn,
-    fullname: fullname || "",
-    pain: assessment.pain,
-    rom: assessment.rom,
-    strength: assessment.strength,
-    adl: assessment.adl,
-    outcome: assessment.outcome
-  };
+    const payload = {
+      _type: "assessment",   // 👈 สำคัญมาก ถ้าไม่มี = จะไม่เข้า Sheet2
+      hn: hn,
+      fullname: fullname || "",
+      pain: assessment.pain,
+      rom: assessment.rom,
+      strength: assessment.strength,
+      adl: assessment.adl,
+      outcome: assessment.outcome
+    };
+
 
   fetch(GOOGLE_API_URL, {
     method: "POST",
