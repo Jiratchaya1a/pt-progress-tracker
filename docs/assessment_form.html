@@ -101,7 +101,6 @@ button:hover {
         margin-bottom: 24px;
     }
 
-    /* ให้ grid เรียงลงมา 1 คอลัมน์ */
     .grid-container {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -112,7 +111,14 @@ button:hover {
     }
 
     .face {
-        font-size: 44px;
+        font-size: 40px;   /* 🔽 ลดขนาดลงนิดให้พอดีจอ */
+    }
+
+    .faces {
+        flex-wrap: nowrap;      /* 🔥 บังคับให้อยู่บรรทัดเดียว */
+        overflow-x: auto;       /* เผื่อจอเล็กมาก เลื่อนได้ */
+        justify-content: space-between;
+        gap: 12px;              /* 🔽 ลดช่องว่าง */
     }
 
     button {
@@ -121,6 +127,7 @@ button:hover {
         padding: 14px;
     }
 }
+
 
 </style>
 </head>
