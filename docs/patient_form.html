@@ -333,16 +333,36 @@
   .field-cid { order: 2; }
   .field-an { order: 3; }
 
-  /* grid หลักของฟอร์ม */
-  form > .form-grid {
+}
+@media (max-width: 768px) {
+
+  /* แถวแรก: HN / CID / AN */
+  .hn-row {
     grid-template-columns: 1fr !important;
+    gap: 10px;
   }
 
-  /* เรียงลำดับฟิลด์ต่อจาก AN */
-  .field-fullname { order: 4; }
-  .field-gender   { order: 5; }
+  /* เอา grid ทั้งฟอร์มมารวมเป็น flow เดียว */
+  form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* บอกให้แต่ละ grid ยอมแตกตัว */
+  form > .form-grid {
+    display: contents;
+  }
+
+  /* ลำดับใหม่ทั้งฟอร์ม */
+  .field-hn        { order: 1; }
+  .field-cid       { order: 2; }
+  .field-an        { order: 3; }
+  .field-fullname  { order: 4; }
+  .field-gender    { order: 5; }
 
 }
+
 
 
 </style>
