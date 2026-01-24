@@ -712,10 +712,22 @@ Promise.all([
 function renderProvinces(){
   const el = document.getElementById('province');
   el.innerHTML = '<option value="">-- เลือกจังหวัด --</option>';
-  provinces.forEach(p=>{
+
+  // หา "ชุมพร"
+  const chumphon = provinces.find(p => p.name_th === "ชุมพร");
+  const others = provinces.filter(p => p.name_th !== "ชุมพร");
+
+  // ใส่ชุมพรก่อน
+  if (chumphon) {
+    el.innerHTML += `<option value="${chumphon.id}">${chumphon.name_th}</option>`;
+  }
+
+  // ใส่จังหวัดที่เหลือตามลำดับเดิม
+  others.forEach(p => {
     el.innerHTML += `<option value="${p.id}">${p.name_th}</option>`;
   });
 }
+
 
 function updateDistricts() {
   const provId = document.getElementById('province').value;
