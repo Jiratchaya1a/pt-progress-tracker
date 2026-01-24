@@ -319,6 +319,36 @@
 
 }
 
+@media (max-width: 768px) {
+
+  /* แถว HN / CID / AN → เรียงลงมา 1 คอลัมน์ */
+  .hn-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .field-hn {
+    order: 1;
+  }
+
+  .field-cid {
+    order: 2;
+  }
+
+  .field-an {
+    order: 3;
+  }
+
+  /* ชื่อ-นามสกุล ให้มาต่อทันที */
+  .field-fullname {
+    order: 4;
+  }
+
+  .field-gender {
+    order: 5;
+  }
+
+}
 
 
 </style>
@@ -338,18 +368,19 @@
   <div class="card" style="margin-bottom:14px;">
     <form id="patientForm" onsubmit="return false;">
 
-    <!-- แถวแรก 3 ช่อง -->
-    <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
-      <div>
-        <label>HN</label><input id="hn" type="text" placeholder="รหัส HN">
-      </div>
-      <div>
-        <label>CID</label><input id="cid" type="text" placeholder="เลขบัตรประชาชน (ถ้ามี)">
-      </div>
-      <div>
-        <label>AN</label><input id="an" type="text" placeholder="AN (ถ้ามี)">
-      </div>
+  <!-- แถวแรก 3 ช่อง -->
+  <div class="form-grid hn-row" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="field-hn">
+      <label>HN</label><input id="hn" type="text" placeholder="รหัส HN">
     </div>
+    <div class="field-cid">
+      <label>CID</label><input id="cid" type="text" placeholder="เลขบัตรประชาชน (ถ้ามี)">
+    </div>
+    <div class="field-an">
+      <label>AN</label><input id="an" type="text" placeholder="AN (ถ้ามี)">
+    </div>
+  </div>
+
         
       <div class="form-grid" style="margin-top:12px;">
       
