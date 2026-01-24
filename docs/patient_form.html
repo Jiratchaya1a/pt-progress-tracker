@@ -291,6 +291,22 @@
 
 }
 
+  @media (max-width: 768px) {
+
+  /* แถว HN / CID / AN */
+  .hn-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  /* แถว ชื่อ + เพศ */
+  .name-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+}
+
 
 </style>
 </head>
@@ -322,23 +338,30 @@
     </div>
   </div>
 
+   <!-- แถวที่ 2: ชื่อ + เพศ -->
+  <div class="form-grid name-row" style="margin-top:12px; grid-template-columns: 2fr 1fr;">
+    
+    <!-- ชื่อ นามสกุล -->
+    <div class="field-fullname">
+      <label>ชื่อ-นามสกุล</label>
+      <input id="fullname" type="text" placeholder="ชื่อ นามสกุล">
+    </div>
+  
+    <!-- เพศ -->
+    <div class="field-gender">
+      <label>เพศ</label>
+      <select id="gender">
+        <option>ชาย</option>
+        <option>หญิง</option>
+      </select>
+    </div>
+  
+  </div>
+
+
+
         
       <div class="form-grid" style="margin-top:12px;">
-      
-      <!-- ชื่อ นามสกุล -->
-      <div class="field-fullname">
-        <label>ชื่อ-นามสกุล</label>
-        <input id="fullname" type="text" placeholder="ชื่อ นามสกุล">
-      </div>
-      
-      <!-- เพศ -->
-      <div class="field-gender">
-        <label>เพศ</label>
-        <select id="gender">
-          <option>ชาย</option>
-          <option>หญิง</option>
-        </select>
-      </div>
 
         <!-- วันเกิด -->
         <div>
