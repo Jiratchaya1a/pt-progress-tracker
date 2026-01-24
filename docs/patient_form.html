@@ -307,6 +307,29 @@
 
 }
 
+@media (max-width: 768px) {
+
+  /* ฟอร์มกริดหลัก */
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  /* กัน span 2 คอลัมน์ (การวินิจฉัย) ให้ไม่พัง flow */
+  .form-grid > div[style*="grid-column"] {
+    grid-column: auto !important;
+  }
+
+  /* datepicker popup ไม่ให้ดัน layout */
+  #dobPicker {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: 90% !important;
+    max-width: 320px;
+  }
+
+}
 
 </style>
 </head>
