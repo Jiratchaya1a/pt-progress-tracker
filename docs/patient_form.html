@@ -293,34 +293,6 @@
 
 @media (max-width: 768px) {
 
-  /* ทำให้ฟอร์มแถวนี้เป็น 2 คอลัมน์เฉพาะ ชื่อ+เพศ */
-  .form-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .field-fullname,
-  .field-gender {
-    display: block;
-  }
-
-  /* กล่องครอบ 2 ช่องนี้ให้เป็นแถวเดียวกัน */
-  .field-fullname {
-    grid-column: 1 / span 2;
-  }
-
-  .field-gender {
-    grid-column: 3 / span 1;
-  }
-
-  /* สร้าง layout 2:1 */
-  .form-grid {
-    grid-template-columns: 2fr 1fr !important;
-  }
-
-}
-
-@media (max-width: 768px) {
-
   /* แถว HN / CID / AN → เรียงลงมา 1 คอลัมน์ */
   .hn-row {
     grid-template-columns: 1fr !important;
@@ -347,6 +319,28 @@
   .field-gender {
     order: 5;
   }
+
+}
+@media (max-width: 768px) {
+
+  /* แถว HN / CID / AN */
+  .hn-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .field-hn { order: 1; }
+  .field-cid { order: 2; }
+  .field-an { order: 3; }
+
+  /* grid หลักของฟอร์ม */
+  form > .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* เรียงลำดับฟิลด์ต่อจาก AN */
+  .field-fullname { order: 4; }
+  .field-gender   { order: 5; }
 
 }
 
